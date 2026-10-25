@@ -1,0 +1,79 @@
+istat_group,istat_name,cnel_code,evidence,note
+Z0010,agricoltura,A011,verified,operai agricoli e florovivaisti; the whole sector's main national contract
+Z0120,estrazione minerali energetici,B254,partly verified,Energia e Petrolio covers the oil and gas industry; extraction is a minor part
+Z0140,estrazione minerali solidi,B282,verified,Attivita Minerarie
+Z0220,alimentari escluse olearia-margariniera,E012,verified,industria alimentare
+Z0240,olearia e margariniera,E012,verified,Assitol (oils and fats) is a signatory of the food-industry contract
+Z0300,"tessili, vestiario e maglierie",D014,verified,Tessile-Abbigliamento-Moda
+Z0340,pelli e cuoio,D111,verified,pelli e succedanei
+Z0360,conciarie,B101,verified,aziende conciarie
+Z0380,calzature,D121,verified,industria delle calzature
+Z0420,legno e prodotti in legno,F051,verified,"Legno, Sughero, Mobile, Arredamento"
+Z0500,grafiche,G011,verified,Grafici Editori
+Z0460,carta e cartone,G022,verified,"carta, cellulosa, cartotecnica"
+Z0480,cartotecnica,G022,verified,same contract as paper
+Z0520,energia e petroli,B254,verified,Energia e Petrolio
+Z0540,chimiche,B011,verified,"chimica, chimica-farmaceutica"
+Z0580,gomma e materie plastiche,B371,verified,"gomma, cavi elettrici e plastica"
+Z0620,vetro,B132,verified,Assovetro
+Z0640,ceramica,B122,verified,"piastrelle di ceramica, refrattari"
+Z0660,laterizi e manufatti in cemento,F021,verified,laterizi e manufatti cementizi
+Z0680,"cemento, calce e gesso",F032,verified,"cemento, calce e gesso"
+Z0700,lapidei,F041,verified,escavazione e lavorazione di materiali lapidei
+Z0740,siderurgica,C011,partly verified,metalworkers' contract covers steel; Istat's finer group is historical
+Z0760,fonderie di seconda fusione,C011,partly verified,metalworkers' contract covers foundries
+Z0800,meccanica generale,C011,partly verified,metalworkers' contract
+Z0820,impiantistica,C011,partly verified,metalworkers' contract (installazione impianti)
+Z0840,elettromeccanica ed elettronica,C011,partly verified,metalworkers' contract
+Z0880,auto-avio,C011,partly verified,metalworkers' contract; the car makers' own contract is the Fiat group
+Z0900,cantieristica,C011,partly verified,metalworkers' contract
+Z0910,Fiat,C010,partly verified,"specific contract of the Stellantis, Iveco, CNH groups"
+Z0940,energia elettrica,K051,verified,settore elettrico
+Z0960,gas e acqua,K321,verified,gas-acqua
+Z1120,servizio smaltimento rifiuti,K541,partly verified,Servizi Ambientali; K531 and K545 are close alternatives
+Z1180,edilizia,F012,verified,imprese edili ed affini
+Z1260,commercio,H011,verified,"Confcommercio terziario, distribuzione e servizi"
+Z1270,farmacie private,H121,verified,farmacie private (Federfarma)
+Z2080,telecomunicazioni,K411,verified,telecomunicazioni (Asstel)
+Z1500,trasporti marittimi,I391,verified,industria armatoriale
+Z1520,trasposti aerei - vettori,I810,partly verified,trasporto aereo; the carriers' part of a single air-transport contract
+Z1380,mobilità - attività ferroviarie,I320,verified,attivita ferroviarie
+Z1400,ferrovie in concessione,I022,partly verified,autoferrotranvieri also covers concession railways
+Z1440,autolinee in concessione,I022,verified,autoferrotranvieri (TPL)
+Z1460,trasporti municipalizzati,I022,verified,autoferrotranvieri (TPL)
+Z1480,trasporto merci su strada,I100,verified,"logistica, trasporto merci e spedizione"
+Z1660,poste,K700,partly verified,"Poste Italiane non-managerial staff; signed by company, check union signatories"
+Z1680,agenzie recapiti espressi,K711,verified,imprese private del recapito (Fise ARE)
+Z1720,servizi di magazzinaggio,I100,partly verified,logistics contract covers warehousing
+Z1740,mobilità - servizi di appalto,ID11,partly verified,servizi in appalto per l'Amministrazione ferroviaria
+Z1760,società e consorzi autostradali,I192,verified,concessionari di autostrade
+Z1780,servizi a terra aeroporti,I810,partly verified,air-transport contract covers airport services
+Z1800,autorimesse e autonoleggio,IC35,verified,"autorimesse, noleggio auto (Aniasa)"
+Z1820,servizi portuali,I5G1,verified,lavoratori dei porti
+Z1841,alberghi,H052,verified,"Federalberghi, Turismo"
+Z1842,pubblici esercizi,H05Y,verified,"Fipe, pubblici esercizi"
+Z1940,editoria giornali,G041,verified,aziende editrici e stampatrici di giornali quotidiani
+Z1960,giornalisti,G031,partly verified,lavoro giornalistico; the archive holds only the 2013-16 cycle (no later FNSI-FIEG renewal found under this code)
+Z1980,attività radiotelevisive,G091,verified,imprese radiotelevisive
+Z2120,credito,J241,verified,"ABI, credito"
+Z2220,assicurazioni,J121,verified,"ANIA, assicurazioni"
+Z2300,studi professionali,H442,verified,"Confprofessioni, studi professionali"
+Z2320,vigilanza privata,HV17,partly verified,vigilanza privata; several contracts exist
+Z2340,pulizia locali,K511,verified,pulizia e servizi integrati
+Z2420,case di cura e istituti priv.,T011,partly verified,AIOP and ARIS non-medical staff; private hospitals
+Z2500,lavanderia industriale,D0L1,verified,lavanderie industriali
+Z2380,scuola privata laica,T231,partly verified,ANINSEI for non-state schools
+Z2400,scuola privata religiosa,T241,partly verified,AGIDAE for religious schools; only definitive texts in the archive
+Z2700,ministeri,S005,verified,Funzioni Centrali (ministries)
+Z2940,enti pubblici non economici,S005,verified,Funzioni Centrali (from 2016 includes enti pubblici non economici)
+Z2760,agenzie fiscali,S005,verified,Funzioni Centrali (from 2016 includes the tax agencies)
+Z3000,regioni ed autonomie locali,S105,verified,Funzioni Locali
+Z3060,servizio sanitario nazionale,S205,verified,Sanita
+Z3110,ricerca (I-VIII),S305,verified,Istruzione e Ricerca (research bodies)
+Z3170,conservatori,S305,verified,Istruzione e Ricerca (AFAM)
+Z3180,scuole,S305,verified,Istruzione e Ricerca (schools)
+Z3240,università non docenti,S305,verified,"Istruzione e Ricerca (universities, non-teaching staff)"
+Z2880,presidenza del consiglio dei ministri,,unverified,"Presidenza del Consiglio has its own contract, not found under a single code"
+Z3340,forze dell'ordine,,unverified,"police: no collective contract, pay set by decree after negotiation"
+Z3440,militari - difesa,,unverified,armed forces: same
+Z3500,attività dei vigili del fuoco,,unverified,fire brigade: same

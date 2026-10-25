@@ -1,0 +1,14 @@
+istat_group,istat_name,ca_contract,evidence,note,extra_contracts
+Z2700,ministries,MNST,verified,Conto annuale area Ministeri,
+Z2760,administration and supervision of fiscal affairs,AGFI,verified,Agenzie fiscali,
+Z2940,non-profit public bodies,EPNE,verified,Enti pubblici non economici,
+Z3000,regional and local bodies,RALN,partly verified,"Regions and local authorities under the national contract; `extra_contracts` adds the special-statute regions and autonomous provinces (own contracts, sensitivity)",REFR+RESI+RESA+REVA+RETN+PRTN+PRBZ
+Z3060,national health service,SSNA,verified,Servizio sanitario nazionale,
+Z3110,research,ERIC,verified,Enti di ricerca,
+Z3170,accademies of music,AFAM,verified,Istituzioni di formazione artistica e musicale,
+Z3180,schools,SCLA,partly verified,National school contract; `extra_contracts` adds the Bolzano and Trento school contracts (sensitivity),SCBZ+SCTN
+Z3240,university clerical/secretarial staff,UNIV,verified,Universita (non-teaching staff); professors and researchers (PRUN) are a separate public-law regime,
+Z2880,presidency of the council of ministers,PCMD,verified,Presidenza del Consiglio dei ministri,
+Z3340,police (force),CCSS+PPSS+GGFF+PPEN+CM09,partly verified,Corpi di polizia: Carabinieri State Police Guardia di Finanza Penitentiary Police and chaplains; whether Istat counts the Carabinieri here or with the armed forces is not documented,
+Z3440,"combat forces of army, navy and airforce",EEII+MMAA+AAMM+CPOR+CM10,partly verified,Forze armate: army navy air force coast guard and chaplains,
+Z3500,fire service activities,VVFF,verified,Vigili del fuoco,

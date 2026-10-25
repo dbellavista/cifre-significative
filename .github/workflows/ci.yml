@@ -1,0 +1,17 @@
+name: ci
+on:
+  push:
+  pull_request:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+      - run: uv sync
+      - name: ruff and ty (blocking)
+        run: uv run inv dev.verify
+      - name: generated docs are current (static sections only, CI has no processed data)
+        run: uv run inv docs.check
+      # data-dependent tests skip themselves when data/processed is absent; parser, decomposition, scenario and docs-consistency tests run offline
+      - run: uv run inv test.run

@@ -1,0 +1,64 @@
+[project]
+name = "cifresignificative"
+version = "0.1.0"
+description = "Cifre significative: Italy compared with the other EU27 members, data pipeline and analysis"
+readme = "README.md"
+authors = [
+    { name = "Daniele Bellavista", email = "daniele.bellavista@protonmail.com" }
+]
+requires-python = ">=3.12"
+dependencies = [
+    "eurostat>=1.1.1",
+    "jupyterlab>=4.6.4",
+    "linearmodels>=7.0",
+    "lxml>=6.1.3",
+    "matplotlib>=3.11.2",
+    "openpyxl>=3.1.5",
+    "pandas>=3.0.6",
+    "playwright>=1.63.0",
+    "plotly>=7.1.0",
+    "pyarrow>=26.0.0",
+    "pypdf>=6.20.0",
+    "requests>=2.34.2",
+    "scikit-learn>=1.9.1",
+    "sdmx1>=2.27.0",
+    "seaborn>=0.13.2",
+    "shapely>=2.2.0",
+    "statsmodels>=0.15.0",
+    "streamlit>=1.59.1",
+    "truststore>=0.10.4",
+    "wbgapi>=1.0.14",
+]
+
+[project.scripts]
+cifresignificative = "cifresignificative:main"
+
+[build-system]
+requires = ["uv_build>=0.13.0,<0.14.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "invoke>=3.0.3",
+    "pytest>=9.1.1",
+    "ruff>=0.17.0",
+    "ty>=0.0.86",
+]
+
+[tool.ruff]
+exclude = ["notebooks"]
+
+[tool.ruff.lint]
+# keep ruff's default rule set (broad since 0.17) and add import sorting; E501 stays off on purpose: the code base is dense, with long lines
+extend-select = ["I"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = "."
+addopts = ["--import-mode=importlib"]
+# warnings are errors, so a new pandas/statsmodels deprecation fails loudly; add narrow ignores here when a library warning is understood
+filterwarnings = ["error"]
+markers = ["slow: executes notebooks end to end (set RUN_SLOW=1)"]
+
+[tool.ty.src]
+include = ["src", "tests", "scripts", "tasks"]

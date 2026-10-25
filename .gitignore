@@ -1,0 +1,14 @@
+.venv/
+.pytest_cache/
+.ruff_cache/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+data/raw/
+data/processed/
+.DS_Store
+data/.browser_profile/
+data/external/source/euklems/
+.claude/settings.local.json
+.obsidian
+*.swp

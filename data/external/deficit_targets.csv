@@ -1,0 +1,12 @@
+budget_year,source,target_pct_gdp,target_final_pct_gdp,target_D1,target_P2,target_D62_D632,target_D3,target_P51G,target_D9,target_other,revenue_target,expenditure_target,interest_target,real_growth_forecast,nominal_growth_forecast,nominal_growth_tm1,nominal_gdp_level_tm2,evidence
+2016,"DPB 2016, submitted 15 October 2015",-2.2,-2.2,9.9,7.6,20.4,1.5,2.3,1.4,2.4,47.6,49.8,4.2,1.6,2.6,1.3,1613859.0,two_tables_agree
+2017,"DPB 2017, submitted October 2016 (the Commission page also lists an update of 19 October)",-2.3,-2.3,9.7,5.4,22.9,1.5,2.4,1.2,2.2,46.7,49.0,3.7,1.0,2.0,1.8,1642444.0,two_tables_agree
+2018,"DPB 2018, submitted October 2017",-1.6,-1.6,9.5,5.3,22.5,1.6,2.1,1.2,2.2,46.4,48.0,3.6,1.5,3.1,2.1,1680522.8,two_tables_agree
+2019,"DPB 2019, submitted 16 October 2018",-2.4,-2.04,9.4,5.4,22.9,1.4,2.1,1.2,2.3,45.8,48.3,3.7,1.5,3.1,2.5,1724954.0,two_tables_agree
+2020,"DPB 2020, submitted October 2019",-2.2,-2.2,9.6,5.6,23.3,1.4,2.4,1.0,2.2,46.5,48.7,3.3,0.6,2.0,1.0,1765421.0,two_tables_agree
+2021,"DPB 2021, submitted October 2020",-7.0,-7.0,10.5,6.2,25.3,1.8,3.4,1.7,2.6,47.7,54.8,3.3,6.0,6.8,-8.0,1789747.0,two_tables_agree
+2022,"DPB 2022, submitted October 2021",-5.6,-5.6,10.1,5.9,24.1,1.8,3.1,2.1,2.6,47.1,52.6,2.9,4.7,6.4,7.6,1653577.0,two_tables_agree
+2023,"DPB 2023, updated version of November 2022 (Meloni government; the October one was the outgoing government's)",-4.5,-4.5,9.4,6.0,23.9,2.9,3.3,1.8,2.3,49.2,53.7,4.1,0.6,4.8,6.8,1782050.0,two_tables_agree_and_dossier
+2024,"DPB 2024, submitted 16 October 2023",-4.3,-4.3,9.0,5.8,23.3,1.8,3.2,1.4,2.1,46.4,50.7,4.2,1.2,4.1,5.3,1946479.0,two_tables_agree_and_dossier
+2025,"DPB 2025, submitted 16 October 2024",-3.3,-3.3,8.9,5.7,22.7,1.6,3.4,1.8,2.3,47.1,50.4,3.9,1.2,3.3,2.9,2128001.0,two_tables_agree_and_dossier
+2026,programmatic row of the dossier L19_DFP17,-2.8,-2.8,,,,,,,,,,,,,,,dossier_row

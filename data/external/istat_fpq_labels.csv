@@ -1,0 +1,13 @@
+item,label
+B9P_B_W0,net lending/net borrowing excluding interest payable (primary deficit or surplus)
+B9_B_W0,net lending/net borrowing
+D1_D_W0,compensation of employees
+D41_D_W0,interest
+D62_D_W0,social benefits other than social transfers in kind
+D9_C_W0,"capital transfers, receivable"
+OKE_D_W0,total capital expenditure
+OOKE_D_W0,"other capital expenditure, payable"
+OTE_D_W0,total Government expenditure
+OTR_C_W0,total government revenue
+P2_D_W0,intermediate consumption
+P51G_D_W0,gross fixed capital formation

@@ -1,0 +1,8 @@
+.venv
+data/raw
+data/external/source
+data/.browser_profile
+notebooks
+reports/figures
+reports/dashboard_screenshots
+.git

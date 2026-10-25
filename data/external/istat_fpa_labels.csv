@@ -1,0 +1,46 @@
+item,label
+B9P_B_W0,net lending/net borrowing excluding interest payable (primary deficit or surplus)
+B9_B_W0,net lending/net borrowing
+D1_D_W0,compensation of employees
+D2_C_W0,taxes on production and imports
+D39_C_W0,other subsidies on production
+D3_D_W0,total subsidies
+D41_D_W0,interest
+D5_C_W0,"current taxes on income, wealth etc"
+D61_C_W0,net social contributions
+D62_D_W0,social benefits other than social transfers in kind
+D632_D_W0,social transfers in kind - purchased market production
+D75_D_W0,miscellaneous current transfers
+D75_D_W0_S14,miscellaneous current transfers to households
+D75_D_W0_S15,miscellaneous current transfers to NPHIs
+D75_D_W0_SIM,miscellaneous current transfers to corporations
+D91_C_W0,capital taxes
+D92_C_W0,investment grants
+D92_C_W0_S13K,investment grants from other subsector of general government
+D92_C_W1_S1,investment grants from the rest of the world
+D92_D_W0,investment grants
+D92_D_W0_S13K,investment grants to general government
+D92_D_W0_S14,investment grants to households
+D92_D_W0_S15,investment grants to NPHIs
+D92_D_W0_SIM,investment grants to corporations
+D92_D_W1_S1,investment grants to the rest of the world
+D99_C_W0,other capital transfers
+D99_C_W0_S13K,other capital transfers from other subsector of general government
+D99_C_W0_S14,other capital transfers  from households
+D99_C_W0_S15,other capital transfers from NPHIs
+D99_C_W0_SIM,other capital transfers from corporations
+D99_C_W1_S1,other capital transfers from the rest of the world
+D99_D_W0,other capital transfers
+D99_D_W0_S13K,other capital transfers to general government
+D99_D_W0_S14,other capital transfers  to households
+D99_D_W0_S15,other capital transfers to NPHIs
+D99_D_W0_SIM,other capital transfers to corporations
+D99_D_W1_S1,other capital transfers to the rest of the world
+D9_C_W0,"capital transfers, receivable"
+OCE_D_W0,total current expenditure
+OCR_C_W0,total current revenue
+OKE_D_W0,total capital expenditure
+OTE_D_W0,total Government expenditure
+OTR_C_W0,total government revenue
+P2_D_W0,intermediate consumption
+P5_D_W0,gross capital formation

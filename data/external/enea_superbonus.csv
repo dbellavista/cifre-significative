@@ -1,0 +1,6 @@
+snapshot,basis,investments_admitted_eur,investments_completed_eur,deductions_accrued_eur,source,location,note
+2021-12-31,monthly bulletin,15200432269,10658895184,11724784702,"ENEA, Rapporto annuale detrazioni fiscali 2022","Tabella 3.23 (pdf page 38)","Superbonus cumulative since July 2020; 91,880 asseverazioni; deductions expected at the end of works 16,720,475,496"
+2022-12-31,monthly bulletin,60759584793,45207107346,49719975417,"ENEA, Rapporto annuale detrazioni fiscali 2023 (dati 2022)","Tabella 3-30 (pdf page 42)","Superbonus cumulative; 352,101 asseverazioni; total investments 61,782,134,718 of which admitted to deduction 60,759,584,793"
+2023-12-31,monthly bulletin,102681616829,91050570575,99732140048,"ENEA, Rapporto annuale detrazioni fiscali 2025 (dati 2024)","Tabella 4.1 (pdf page 47)","SuperEcobonus cumulative; 461,432 buildings"
+2025-03-31,monthly bulletin,120704538212,116240260622,126000081893,"ENEA, Rapporto annuale detrazioni fiscali 2025 (dati 2024)","Tabella 4.1 (pdf page 47)","SuperEcobonus cumulative, after the correction of A/9 errors; not a year end"
+2025-12-31,end-of-works date,,118007895683,126700000000,"ENEA, Rapporto annuale detrazioni fiscali 2026 (dati 2025)","Tabella 4.2 and text of chapter 4","Works ended by 31/12/2025, extraction of 31/03/2026 (late transmissions included); deductions rounded as in the text (126.7 billion)"
