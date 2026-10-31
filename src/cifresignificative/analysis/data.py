@@ -153,7 +153,7 @@ def aggregate_productivity(s: pd.DataFrame) -> pd.DataFrame:
 def shift_share(s: pd.DataFrame, iso3: str, start: int, end: int) -> pd.Series:
     """Change in aggregate real output per hour (% of the start level), split into
     within-sector productivity, reallocation of hours between sectors, and their interaction."""
-    d = s[s.iso3 == iso3].pivot(index="nace_r2", columns="year", values=["prod", "hours_ths"]).dropna()
+    d = s[(s.iso3 == iso3) & s.year.isin([start, end])].pivot(index="nace_r2", columns="year", values=["prod", "hours_ths"]).dropna()  # only the two years: a missing year elsewhere must not drop the sector
     p0, p1 = d["prod"][start], d["prod"][end]
     h0, h1 = d["hours_ths"][start], d["hours_ths"][end]
     s0, s1 = h0 / h0.sum(), h1 / h1.sum()
