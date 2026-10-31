@@ -1,0 +1,9 @@
+name = "template"               # must equal the folder name
+title = "Title of the study"
+description = "One sentence: the question the study asks."
+status = "draft"                # draft | active | archived
+notebooks = "notebooks"         # folders are relative to this file
+cells = "notebook_cells"        # package with the notebook cells (scripts/make_notebooks.py)
+reports = "reports"
+publications = ""               # empty when the study has no public series
+dashboard = ""                  # dotted path of a module with VIEWS, TITLE, CAPTION, load() and data_error() (see studies/italy_productivity)

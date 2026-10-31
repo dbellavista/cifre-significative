@@ -10,10 +10,10 @@ from pathlib import Path
 
 import requests
 
-from cifresignificative.dashboard.app import VIEWS
-from cifresignificative.sources import browser as br
+from cifresignificative.core.sources import browser as br
+from cifresignificative.studies.italy_productivity.dashboard import VIEWS
 
-OUT = Path("reports/dashboard_screenshots")
+OUT = Path("studies/italy_productivity/reports/dashboard_screenshots")
 PORT = 8791
 
 

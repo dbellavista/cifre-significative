@@ -1,6 +1,6 @@
 # Methodology
 
-How we approach the work in this repository and the statistics behind it. This document explains the *why* and the mathematics; [`analysis_framework.md`](analysis_framework.md) is the per-experiment reference (ids, runners, numbers, limits), [`data_dictionary.md`](data_dictionary.md) describes the tables and [`../reports/findings.md`](../reports/findings.md) holds the results. Function names below point to the code that implements each step.
+How we approach the work in this repository and the statistics behind it. This document explains the *why* and the mathematics; [`analysis_framework.md`](analysis_framework.md) is the per-experiment reference (ids, runners, numbers, limits), [`data_dictionary.md`](data_dictionary.md) describes the tables and [`../studies/italy_productivity/reports/findings.md`](../studies/italy_productivity/reports/findings.md) holds the results. Function names below point to the code that implements each step.
 
 ## 1. Purpose and stance
 
@@ -24,8 +24,8 @@ The approach follows from this: **pre-specify, correct for multiplicity, test ag
 | No silent splicing | Series breaks, provisional values and approximations carry flags (`b`, `p`, `backcast`, `linked`) and are dropped from the screens (`corr.BAD_FLAGS`). |
 | Pre-specification | A family of tests is fixed before the numbers are seen and the multiplicity correction runs over that family. Choices made after seeing results (for instance the unit of analysis in notebook 39) are declared as such and treated as sensitivity analyses. |
 | Calibrated nulls | Every new statistic is run on shuffled or placebo data. The shuffled version must give about zero discoveries, or about 5% of tests below p = 0.05. A procedure that fails its null is fixed or replaced, not reported. |
-| Report negatives | "0 of 10 tests survive" is a finding and goes in `reports/findings.md` with its power limit. |
-| Takeaways come from executed numbers | Print the numbers, write the text, re-check each quoted figure. Findings go to `reports/findings.md`, limits to `analysis_framework.md`. |
+| Report negatives | "0 of 10 tests survive" is a finding and goes in `studies/italy_productivity/reports/findings.md` with its power limit. |
+| Takeaways come from executed numbers | Print the numbers, write the text, re-check each quoted figure. Findings go to `studies/italy_productivity/reports/findings.md`, limits to `analysis_framework.md`. |
 
 ## 3. Data pipeline and what it guarantees
 
@@ -211,8 +211,8 @@ with $\bar r_s$ and $\bar w_s$ the midpoints of the two groups. The decompositio
 
 ## 15. Reproducibility and checks
 
-- `uv run python -m cifresignificative.fetch` and `clean.build` rebuild every table; `experiments.run_*_all()` rebuild every result under `data/processed/correlations/`; random procedures take a fixed seed (`np.random.default_rng(seed)`).
-- Notebook cells are generated from `scripts/notebook_cells.py` and executed, so the text in a notebook matches its outputs.
+- `uv run python -m cifresignificative.core.fetch` and `clean.build` rebuild every table; `experiments.run_*_all()` rebuild every result under `data/processed/correlations/`; random procedures take a fixed seed (`np.random.default_rng(seed)`).
+- Notebook cells are generated from the cells in `studies/italy_productivity/notebook_cells/` and executed, so the text in a notebook matches its outputs.
 - `tests/` covers the statistics directly: BH monotonicity and bounds, planted-correlation recovery, shuffled-null discovery counts, permutation calibration, spatial filter calibration, accounting identities of parsed tables. CI runs ruff, ty, the catalog freshness check and pytest.
 - Hand-curated inputs in `data/external/` carry `evidence` labels (`verified`, `partly verified`, `unverified`); a date is `partly verified` only when two independent sources agree on the same day.
 

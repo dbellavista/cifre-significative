@@ -12,7 +12,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from cifresignificative.countries import NAMES
+from cifresignificative.core.countries import NAMES
 
 SRC = Path("data/external/source/piaac/gpseducation_piaac2023.tsv")
 OUT = Path("data/external/piaac.csv")

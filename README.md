@@ -8,8 +8,8 @@ Tutto è **descrittivo, mai causale**: le associazioni non dimostrano cause. Le 
 | cartella | contenuto |
 |---|---|
 | `src/cifresignificative/` | pipeline (scarico, pulizia), analisi e cruscotto Streamlit |
-| `notebooks/` | 42 notebook eseguiti, con i risultati e le note a margine |
-| `reports/findings.md` | sintesi dei risultati con numeri e limiti; i grafici sono in `reports/figures/` |
+| `studies/italy_productivity/notebooks/` | 42 notebook eseguiti, con i risultati e le note a margine |
+| `studies/italy_productivity/reports/findings.md` | sintesi dei risultati con numeri e limiti; i grafici sono in `studies/italy_productivity/reports/figures/` |
 | `docs/` | metodologia, schema dei dati, catalogo degli indicatori, quadro delle analisi |
 | `data/external/*.csv` | tabelle curate a mano (governi, politiche, glossario, tabelle compilate da fonti aperte) |
 | `tests/` | test della pipeline e dei metodi statistici |
@@ -17,8 +17,8 @@ Tutto è **descrittivo, mai causale**: le associazioni non dimostrano cause. Le 
 ## Riprodurre
 ```
 uv sync
-uv run python -m cifresignificative.fetch           # scarica i dati dalle fonti originali (Eurostat, AMECO, OCSE, ...)
-uv run python -m cifresignificative.clean.build     # costruisce data/processed/*.parquet
+uv run python -m cifresignificative.core.fetch           # scarica i dati dalle fonti originali (Eurostat, AMECO, OCSE, ...)
+uv run python -m cifresignificative.core.clean.build     # costruisce data/processed/*.parquet
 uv run inv test.run
 ```
 Alcune fonti non si scaricano da sole o non sono ridistribuibili: [`docs/reproducibility.md`](docs/reproducibility.md) dice quali notebook ne dipendono e come procurarsele.

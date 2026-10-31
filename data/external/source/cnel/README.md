@@ -3,7 +3,7 @@
 Source: CNEL, *Archivio nazionale dei contratti e degli accordi collettivi di lavoro*, open-data API listed at https://www.cnel.it/Archivio-Contratti-Collettivi/Contratti-Open-Data (IODL 2.0, updated weekly). Queried on 2026-10-17 with `type=ARCHIVIO_CORRENTE` (2,288 agreements) and `type=ARCHIVIO_STORICO` (5,404).
 Fields used: `codiceCcnl`, `tipologiaAccordo`, `dataStipula`, `dataDecorrenza`, `dataScadenzaContrattuale`, `partiSindacaliFirmatarie`, `idAccordo`, `titoloCcnl`. Employee counts (`dipendenti`) are empty in every row.
 
-Files (all produced by `uv run python -m cifresignificative.sources.cnel_contracts fetch|build|check`; the raw JSON goes to gitignored `data/raw/cnel/`):
+Files (all produced by `uv run python -m cifresignificative.core.sources.cnel_contracts fetch|build|check`; the raw JSON goes to gitignored `data/raw/cnel/`):
 - `data/external/cnel_istat_map.csv`: hand-curated map from each of the 78 Istat agreement leaf groups to one CNEL contract code (`istat_group, istat_name, cnel_code, evidence, note`). Four groups have no code (police, armed forces, fire brigade: pay set by decree after negotiation; Presidenza del Consiglio: own contract not found under one code).
 - `data/external/cnel_contracts.csv`: one row per renewal cycle of a mapped code (`code, signed, start, expiry, kind, confederal, n_rows, ids`), built from the raw JSON by rules documented in the module docstring.
 
@@ -21,4 +21,4 @@ The labels are my reading of titles and signatories on 2026-10-17, not an indepe
 - The archive's coverage of renewals before 2010 is thin, so cycles are only reliable from about 2010.
 
 ## Employee counts (added 2026-10-17)
-`workers/` holds three Excel files downloaded by hand from the CNEL archive ("CCNL settore privato" CNEL-INPS lists; employers and employees per agreement code, December 2025, INPS UNIEMENS): `ccnl-di-settore-vigenti-e-ultrattivi.xlsx`, `ccnl-altri.xlsx`, `contratti-aziendali-di-livello-nazionale.xlsx`. `uv run python -m cifresignificative.sources.cnel_workers build` writes `data/external/cnel_workers.csv`. Private sector only (no ARAN agreements); a 2025 snapshot; the other files of the download (managers, collaborators, AEC, new deposits) have no counts and are not kept.
+`workers/` holds three Excel files downloaded by hand from the CNEL archive ("CCNL settore privato" CNEL-INPS lists; employers and employees per agreement code, December 2025, INPS UNIEMENS): `ccnl-di-settore-vigenti-e-ultrattivi.xlsx`, `ccnl-altri.xlsx`, `contratti-aziendali-di-livello-nazionale.xlsx`. `uv run python -m cifresignificative.core.sources.cnel_workers build` writes `data/external/cnel_workers.csv`. Private sector only (no ARAN agreements); a 2025 snapshot; the other files of the download (managers, collaborators, AEC, new deposits) have no counts and are not kept.

@@ -12,12 +12,25 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+from matplotlib.axes import Axes
 
-from cifresignificative.analysis import industry_panel
-from cifresignificative.analysis.data import (
+from cifresignificative.core.viz import style
+from cifresignificative.core.viz.style import (
+    EU_C,
+    INK,
+    INK2,
+    ITALY_C,
+    PEER_C,
+    SURFACE,
+    apply_style,
+)
+from cifresignificative.studies.italy_productivity.analysis import industry_panel
+from cifresignificative.studies.italy_productivity.analysis import size_class as SC
+from cifresignificative.studies.italy_productivity.analysis import size_growth as SG
+from cifresignificative.studies.italy_productivity.analysis.data import (
     EU27_ISO3,
     ITALY,
-    MARKET_SECTORS,
+    NINE_SECTIONS,
     PROCESSED,
     aggregate_productivity,
     gdp_pc_growth_decomposition,
@@ -28,17 +41,14 @@ from cifresignificative.analysis.data import (
     long_wide,
     shift_share,
 )
-from cifresignificative.analysis.synth import placebo_ratios, rmspe, synthetic_control
-from cifresignificative.analysis.timeline import government_stats, load_governments
-from cifresignificative.viz import style
-from cifresignificative.viz.style import (
-    EU_C,
-    INK,
-    INK2,
-    ITALY_C,
-    PEER_C,
-    SURFACE,
-    apply_style,
+from cifresignificative.studies.italy_productivity.analysis.synth import (
+    placebo_ratios,
+    rmspe,
+    synthetic_control,
+)
+from cifresignificative.studies.italy_productivity.analysis.timeline import (
+    government_stats,
+    load_governments,
 )
 
 OUT = Path("figures")
@@ -227,7 +237,7 @@ def fig01_shift(s: pd.DataFrame, others: list[str]) -> None:
 
 def fig01_sectors(s: pd.DataFrame, others: list[str]) -> None:
     p = s.pivot_table(index="iso3", columns=["nace_r2", "year"], values="prod")
-    g = pd.DataFrame({n: np.log(p[(n, SECT_B)] / p[(n, SECT_A)]) / (SECT_B - SECT_A) * 100 for n in MARKET_SECTORS}); gi = g.loc[ITALY]; gm = g.loc[others].median()
+    g = pd.DataFrame({n: np.log(p[(n, SECT_B)] / p[(n, SECT_A)]) / (SECT_B - SECT_A) * 100 for n in NINE_SECTIONS}); gi = g.loc[ITALY]; gm = g.loc[others].median()
     cnt = g.loc[others].notna().sum()
     print(f"01 sector growth % a year {SECT_A}-{SECT_B} (log): Italy / median of others / n\n", pd.DataFrame({"ITA": gi, "med": gm, "n": cnt}).round(2).to_string(), "\n   Italy below median in", int((gi < gm).sum()), "of", len(gi))
     order = gi.sort_values().index; fig, ax = plt.subplots(figsize=(5.4, 6.4)); yy = np.arange(len(order))
@@ -365,14 +375,172 @@ def cover01(s: pd.DataFrame, others: list[str]) -> None:
     OUT.mkdir(parents=True, exist_ok=True); fig.savefig(OUT / "01_copertina.png", dpi=100, facecolor=bg); plt.close(fig)
 
 
+CLASS_NAMES_H = ["0-9 addetti (micro)", "10-19 addetti", "20-49 addetti", "50-249 addetti (medie)", "250 e oltre (grandi)"]
+
+
+SEC02_IT = {"C": "Manifattura", "F": "Costruzioni", "G": "Commercio", "H": "Trasporti", "I": "Alloggio e ristorazione", "J": "Informazione", "L": "Immobiliari", "M": "Servizi professionali", "N": "Servizi amministrativi"}
+S02_YEAR = 2023  # newest year with all 27 members and no break flag
+EU27_IT = {"AUT": "Austria", "BEL": "Belgio", "BGR": "Bulgaria", "CYP": "Cipro", "CZE": "Cechia", "DEU": "Germania", "DNK": "Danimarca", "ESP": "Spagna", "EST": "Estonia", "FIN": "Finlandia", "FRA": "Francia", "GRC": "Grecia", "HRV": "Croazia", "HUN": "Ungheria", "IRL": "Irlanda", "ITA": "Italia", "LTU": "Lituania", "LUX": "Lussemburgo", "LVA": "Lettonia", "MLT": "Malta", "NLD": "Paesi Bassi", "POL": "Polonia", "PRT": "Portogallo", "ROU": "Romania", "SVK": "Slovacchia", "SVN": "Slovenia", "SWE": "Svezia"}
+S02_LABELS = {"ITA": "Italia", "DEU": "Germania", "FRA": "Francia", "ESP": "Spagna", "PRT": "Portogallo", "GRC": "Grecia", "SVK": "Slovacchia", "LUX": "Lussemburgo", "NLD": "Paesi Bassi", "ROU": "Romania"}
+
+
+def _top_axis(ax: Axes, label: str) -> None:
+    """Repeat a tall figure's x axis at the top, with its own title, so that the figure title does not read as the axis title."""
+    top = ax.secondary_xaxis("top"); top.set_xticks(ax.get_xticks()); top.set_xlabel(label, fontsize=11, color=INK2); top.tick_params(length=0)
+    for side in top.spines.values(): side.set_visible(False)
+
+
+def fig02_micro(size: pd.DataFrame) -> None:
+    """Micro share of employment, all 27 members, one year."""
+    m = SG.micro_shares(size, "new")[S02_YEAR].dropna().sort_values(); med = m.drop(ITALY).median()
+    print(f"02 micro share {S02_YEAR}: {len(m)} members, Italy {m[ITALY]:.1f}, median {med:.1f}, rank {(m >= m[ITALY]).sum()}; top {m.tail(5).round(1).to_dict()}")
+    fig, ax = plt.subplots(figsize=(5.4, 7.8)); cols = [ITALY_C if c == ITALY else "#c9ced6" for c in m.index]
+    ax.barh([EU27_IT[c] for c in m.index], m.values, color=cols, height=0.74); ax.axvline(med, color=EU_C, lw=1.8)
+    ax.text(med + 0.5, 0.5, f"Mediana degli altri\n{med:.1f}%", color=EU_C, fontsize=11, fontweight="bold", va="center")
+    ax.annotate(f"{m[ITALY]:.1f}%", (m[ITALY], list(m.index).index(ITALY)), xytext=(4, 0), textcoords="offset points", va="center", fontsize=12, fontweight="bold", color=ITALY_C)
+    ax.set_xlim(0, 52); ax.tick_params(axis="y", labelsize=10.5); ax.grid(axis="y", visible=False); ax.margins(y=0.01); ax.set_xlabel("Quota di occupati (%)", fontsize=11); _top_axis(ax, "Quota di occupati (%)")
+    ax.set_title(f"Occupati in imprese con meno di 10 addetti, {S02_YEAR}", loc="left", pad=12); fig.tight_layout(); save(fig, "02_quota_micro")
+
+
+def fig02_sections(size: pd.DataFrame) -> None:
+    """Micro share by section, Italy against the median of the others."""
+    codes = ["L", "M", "F", "I", "G", "J", "C", "H", "N"]
+    d = size[(size.vintage == "new") & (size.year == S02_YEAR) & size.nace_r2.isin(codes) & size.iso3.isin(EU27_ISO3) & size.size_emp.isin(["0-9", "TOTAL"])]
+    p = d.pivot_table(index=["iso3", "nace_r2"], columns="size_emp", values="persons"); M = (p["0-9"] / p["TOTAL"]).unstack("nace_r2")[codes] * 100
+    it, md = M.loc[ITALY], M.drop(ITALY).median(); ord_ = (it - md).sort_values().index
+    print("02 sections:", pd.DataFrame({"it": it, "med": md, "n": M.notna().sum(), "rank": [(M[c] >= it[c]).sum() for c in codes]}).round(1).to_string())
+    fig, ax = plt.subplots(figsize=(5.4, 5.2)); y = np.arange(len(ord_))
+    ax.barh(y, it[ord_], color=ITALY_C, height=0.62); ax.scatter(md[ord_], y, marker="D", s=62, color=EU_C, zorder=3, edgecolor=SURFACE)
+    for i, c in enumerate(ord_): ax.text(124, i, f"{it[c]:.0f} / {md[c]:.0f}", va="center", ha="right", fontsize=11, color=INK)
+    ax.set_yticks(y, [SEC02_IT[c] for c in ord_]); ax.set_xlim(0, 125); ax.grid(axis="y", visible=False); ax.set_xticks([0, 25, 50, 75, 100]); ax.set_xlabel("Quota di occupati (%)", fontsize=11); _top_axis(ax, "Quota di occupati (%)")
+    ax.set_title(f"Occupati nelle microimprese, {S02_YEAR}\nItalia (barra) e mediana degli altri (rombo)", loc="left", fontsize=12.5, pad=12); fig.tight_layout(); save(fig, "02_settori")
+
+
+def fig02_classes(size: pd.DataFrame, panel: pd.DataFrame) -> None:
+    """Italy's productivity per hour against Germany's and France's, class by class, as a percentage difference."""
+    lg = SC.level_gap(size, panel, vintage="new", year=S02_YEAR); h = lg[lg.basis == "hour"].set_index("size_emp"); labs = ["0-9", "10-19", "20-49", "50-249", "250+"]
+    print("02 classes per hour:", h[["ratio_DEU", "ratio_FRA", "ratio_to_median", "rank", "n"]].round(3).to_string()); print("per head:", lg[lg.basis == "head"].set_index("size_emp")[["ratio_DEU", "ratio_FRA"]].round(3).to_string())
+    fig, ax = plt.subplots(figsize=(5.4, 4.6)); cl = SC.CLASSES; x = np.arange(5); d, f = (h.loc[cl, "ratio_DEU"] - 1) * 100, (h.loc[cl, "ratio_FRA"] - 1) * 100
+    ax.axhline(0, color=INK, lw=1.1); ax.plot(x, f, color=EU_C, lw=2.6, marker="o", ms=6); ax.plot(x, d, color=ITALY_C, lw=2.6, marker="o", ms=6)
+    for i in x:
+        up = f.iloc[i] >= d.iloc[i]
+        ax.annotate(f"{f.iloc[i]:+.0f}".replace("-", "−"), (i, f.iloc[i]), xytext=(0, 9 if up else -16), textcoords="offset points", ha="center", fontsize=12, fontweight="bold", color=EU_C)
+        ax.annotate(f"{d.iloc[i]:+.0f}".replace("-", "−"), (i, d.iloc[i]), xytext=(0, -16 if up else 9), textcoords="offset points", ha="center", fontsize=12, fontweight="bold", color=ITALY_C)
+    ax.text(-0.2, 18, "Rispetto alla Francia", color=EU_C, fontsize=11.5, fontweight="bold", va="center"); ax.text(-0.2, 11, "Rispetto alla Germania", color=ITALY_C, fontsize=11.5, fontweight="bold", va="center")
+    ax.set_xticks(x, labs); ax.set_xlabel("Addetti dell'impresa"); ax.set_ylabel("Differenza (%)"); ax.set_ylim(-48, 24); ax.set_xlim(-0.3, 4.3); ax.grid(axis="x", visible=False)
+    ax.set_title(f"Produttività oraria dell'Italia per classe, {S02_YEAR}\nsopra o sotto Germania e Francia", loc="left", fontsize=12.5); fig.tight_layout(); save(fig, "02_classi")
+
+
+def fig02_example() -> None:
+    """Two invented countries: shops and factories, the two parts of the gap, in the colours of the real split."""
+    fig, axes = plt.subplots(2, 1, figsize=(5.4, 5.6), height_ratios=[1, 1.5]); shop, factory = "#c9ced6", "#7d8590"
+    ax = axes[0]
+    for yi, s, a, b in ((1, 60, 50, 90), (0, 30, 55, 100)):
+        ax.barh(yi, s, color=shop, height=0.72); ax.barh(yi, 100 - s, left=s, color=factory, height=0.72)
+        ax.text(s / 2, yi, f"{s}% botteghe\n{a} € l'ora", ha="center", va="center", fontsize=10.5, color=INK); ax.text(s + (100 - s) / 2, yi, f"{100 - s}% fabbriche\n{b} € l'ora", ha="center", va="center", fontsize=10.5, color="white", fontweight="bold")
+    ax.set_yticks([1, 0], ["Paese A", "Paese B"]); ax.set_xlim(0, 100); ax.set_xticks([]); ax.grid(visible=False); ax.set_title("Dove lavorano gli addetti e quanto si produce", loc="left", fontsize=12.5)
+    for s in ax.spines.values(): s.set_visible(False)
+    ax = axes[1]; y = [3, 2, 1, 0]; a, m, b = 0.6 * 50 + 0.4 * 90, 0.3 * 50 + 0.7 * 90, 0.3 * 55 + 0.7 * 100
+    ax.barh(y, [a, m - a, b - m, b], left=[0, a, m, 0], color=[PEER_C, EU_C, ITALY_C, PEER_C], height=0.62)
+    for yi, xpos, lab, col in ((3, a, f"{a:.0f} €", INK), (2, m, f"+{m - a:.0f} €", EU_C), (1, b, f"+{b - m:.1f} €", ITALY_C), (0, b, f"{b:.1f} €", INK)): ax.text(xpos + 1.5, yi, lab, va="center", fontsize=12, fontweight="bold", color=col)
+    ax.set_yticks(y, ["Paese A", "Effetto\ndistribuzione", "Effetto\nproduttività", "Paese B"]); ax.set_xlim(0, 106); ax.grid(axis="y", visible=False); ax.set_xlabel("Valore aggiunto medio per ora (€)")
+    ax.set_title("Da A a B, in due passi", loc="left", fontsize=12.5); fig.tight_layout(); save(fig, "02_esempio")
+
+
+def fig02_split(size: pd.DataFrame, panel: pd.DataFrame) -> None:
+    """Exact split of Italy's gap per hour into size mix and within class, against four members and the median of the others."""
+    g = SC.gap_decomposition(size, panel, vintage="new", year=S02_YEAR, basis="hour").set_index("reference").loc[["DEU", "NLD", "FRA", "ESP", "typical"]]
+    print("02 split:", g[["n", "total", "size_mix", "within"]].round(4).to_string())
+    t, s, w = g.total.astype(float) * 100, g.size_mix.astype(float) * 100, g.within.astype(float) * 100; labs = ["Germania", "Paesi Bassi", "Francia", "Spagna", "Mediana\ndegli altri"]; y = np.arange(5)[::-1]
+    fig, ax = plt.subplots(figsize=(5.4, 4.4)); _split_bars(ax, y, labs, s, w, t)
+    ax.set_title(f"Divario di produttività oraria, {S02_YEAR}\ne le sue due parti", loc="left"); fig.tight_layout(); save(fig, "02_scomposizione")
+
+
+def _split_bars(ax: Axes, y: np.ndarray, labs: list[str], s: pd.Series, w: pd.Series, t: pd.Series) -> None:
+    """Horizontal split of a gap into the distribution and the productivity effect, with the total as a point and a number on the right."""
+    ax.barh(y, s, color=EU_C, height=0.56, label="Effetto distribuzione")
+    ax.barh(y, w, left=np.where(np.sign(w) == np.sign(s), s, 0), color=ITALY_C, height=0.56, label="Effetto produttività"); ax.scatter(t, y, color=INK, s=46, zorder=4, label="Divario totale"); ax.axvline(0, color=INK, lw=0.9)
+    for yi, v in zip(y, t, strict=True): ax.text(29, float(yi), f"{v:+.0f}".replace("-", "−"), ha="right", va="center", fontsize=12, fontweight="bold", color=INK)
+    ax.set_yticks(y, labs); ax.set_xlim(-30, 30); ax.grid(axis="y", visible=False); ax.set_xlabel("Punti logaritmici (Italia − confronto)"); ax.legend(loc="upper center", bbox_to_anchor=(0.42, -0.18), ncol=3, frameon=False, fontsize=10, columnspacing=0.8, handletextpad=0.3)
+
+
+def fig02_coverage(sc: dict[str, pd.DataFrame]) -> None:
+    """The hypothetical exercise: the gap to Germany when the value added missing from the size-class statistics is put in Italy's micro class."""
+    d = sc["scenarios"]; print("02 coverage:\n", d.round(2).to_string(), "\n", sc["ratio"].ratio[[ITALY, "DEU"]].round(3).to_dict(), "median others", round(float(sc["ratio"].ratio.drop(ITALY).median()), 3))
+    fig, ax = plt.subplots(figsize=(5.4, 4.1)); y = np.arange(3)[::-1]; _split_bars(ax, y, ["Dati pubblicati", "Scenario 1\n+65 miliardi", "Scenario 2\n+131 miliardi"], d.mix_vs_germany, d.within_vs_germany, d.total_vs_germany)
+    ax.set_title("Esercizio ipotetico: divario con la Germania\nse una parte del mancante fosse nelle micro, 2019", loc="left", fontsize=12); fig.tight_layout(); save(fig, "02_scenari")
+
+
+def fig02_time(size: pd.DataFrame, sec: pd.DataFrame) -> None:
+    """Italy's micro share over time (two vintages, not joined) above real value added per hour of the business economy."""
+    old, new = SG.micro_shares(size, "old").loc[ITALY].dropna(), SG.micro_shares(size, "new").loc[ITALY].dropna(); acc = SG.business_accounts(sec, size).pivot(index="year", columns="iso3", values="real"); R = acc.loc[2012:2024]; R = R / R.loc[2012] * 100; med = R.drop(columns=ITALY).median(axis=1)
+    print("02 time: micro old", old.round(1).to_dict(), "new", new.round(1).to_dict(), "index 2024", R.loc[2024, [ITALY, "DEU"]].round(1).to_dict(), "median", round(med[2024], 1))
+    fig, axes = plt.subplots(2, 1, figsize=(5.4, 6.4), sharex=True)
+    ax = axes[0]; ax.plot(old.index, old.values, color=ITALY_C, lw=2.6, marker="o", ms=4); ax.plot(new.index, new.values, color=ITALY_C, lw=2.6, marker="o", ms=4, ls="-"); ax.axvline(2017, color=INK2, lw=0.8, ls=":"); ax.axvspan(2020.2, 2020.8, color="#e5e7eb", zorder=0)
+    ax.text(2017.1, 47.3, "interruzione\ndi serie", fontsize=10, color=INK2, va="top"); ax.text(2012, 39.6, "Le due linee sono serie diverse:\nnon vanno unite", fontsize=10, color=INK2, va="bottom"); ax.set_ylim(39, 48)
+    for x, v, dx, dy in ((2012, old[2012], 4, 8), (2019, old[2019], 0, -17), (2021, new[2021], 12, 8), (2024, new[2024], 16, 3)): ax.annotate(f"{v:.1f}", (x, v), xytext=(dx, dy), textcoords="offset points", fontsize=12, fontweight="bold", color=ITALY_C, ha="center")
+    ax.tick_params(axis="x", labeltop=True); ax.set_title("Occupati nelle microimprese in Italia (%)", loc="left", pad=12)
+    ax = axes[1]; ax.plot(R.index, med, color=EU_C, lw=2.4); ax.plot(R.index, R["DEU"], color=PEER_C, lw=2); ax.plot(R.index, R[ITALY], color=ITALY_C, lw=2.8); ax.set_xlim(2011.6, 2026.9); ax.set_xticks([2012, 2016, 2020, 2024])
+    for c, v, col, name in [("m", med[2024], EU_C, "Mediana"), ("d", R.loc[2024, "DEU"], PEER_C, "Germania"), ("i", R.loc[2024, ITALY], ITALY_C, "Italia")]: ax.text(2024.2, v, f"{name} {v:.0f}", color=col, fontsize=11, fontweight="bold", va="center")
+    ax.set_title("Produttività oraria reale, 2012 = 100", loc="left"); fig.tight_layout(); save(fig, "02_quota_e_produttivita")
+
+
+def fig02_cross(link: dict[str, pd.DataFrame]) -> None:
+    """The micro share against the level and the growth of productivity, all members."""
+    t = link["table"]; print("02 cross:\n", link["links"].round(3).to_string(), "\n", link["partial"].round(3).to_string()); print(t.round(1).sort_values("micro").to_string())
+    fig, axes = plt.subplots(2, 1, figsize=(5.4, 7.6), sharex=True)
+    panels = [(axes[0], "level", f"Livello: € per ora a parità di prezzi, {S02_YEAR}", 70), (axes[1], "growth_pct", "Crescita della produttività, 2005-2024 (%)", 100)]
+    off = {"level": {"ITA": (7, 3), "DEU": (6, 0), "FRA": (6, 3), "ESP": (-4, -10), "PRT": (6, -9), "GRC": (-6, 5), "SVK": (-6, -10), "LUX": (5, 5), "NLD": (6, 4), "ROU": (6, -5)},
+           "growth_pct": {"ITA": (-6, -11), "DEU": (6, 3), "FRA": (-2, -11), "ESP": (6, -6), "PRT": (7, 3), "GRC": (-6, 4), "SVK": (-6, 5), "LUX": (5, -8), "NLD": (5, 5), "ROU": (6, 3)}}
+    for ax, col, title, top in panels:
+        d = t.dropna(subset=["micro", col]); hi = d[col] > top; v = d[~hi]
+        ax.scatter(v.micro, v[col], s=34, color="#c9ced6", zorder=2)
+        for c, lab in S02_LABELS.items():
+            if c in v.index:
+                ax.scatter(v.micro[c], v[col][c], s=78 if c == ITALY else 44, color=ITALY_C if c == ITALY else INK2, zorder=3, edgecolor=SURFACE)
+                dx, dy = off[col].get(c, (5, 4)); ax.annotate(lab, (v.micro[c], v[col][c]), xytext=(dx, dy), textcoords="offset points", fontsize=10.5 if c != ITALY else 12, color=ITALY_C if c == ITALY else INK, fontweight="bold" if c == ITALY else "normal", ha="left" if dx > 0 else "right")
+        ax.set_title(title, loc="left", fontsize=12.5, pad=12); ax.set_ylim(top=top * 1.03)
+    _top_axis(axes[0], "Occupati nelle microimprese, 2023 (%)"); axes[1].axhline(0, color=INK2, lw=0.8); axes[1].set_xlabel("Occupati nelle microimprese, 2023 (%)"); fig.tight_layout(); save(fig, "02_livello_e_crescita")
+
+
+def fig02_sections_gap(sl: dict[str, pd.DataFrame]) -> None:
+    """Italy's micro excess against its growth gap by section."""
+    d = sl["italy"].rename(index=SG.SECTIONS).dropna(subset=["gap", "excess"]); print("02 sections gap:\n", sl["italy"].round(2).to_string(), "\n", sl["pooled"].round(3).to_string()); c = sl["countries"].rho
+    print(f"   Italy rho {c[ITALY]:.2f}, rank {(c <= c[ITALY]).sum()} of {len(c)} (1 = most negative); median others {c.drop(ITALY).median():.2f}; negative {(c < 0).sum()}; members {sorted(c.index)}")
+    fig, ax = plt.subplots(figsize=(5.4, 4.8)); ax.scatter(d.excess, d.gap, s=70, color=ITALY_C, zorder=3, edgecolor=SURFACE); ax.set_title("Microimprese in più e ritardo di crescita\nItalia, settore per settore, 2005-2024", loc="left", fontsize=12)
+    off = {"Commercio": (-6, 8, "right"), "Alloggio e ristoraz.": (-4, -11, "right"), "Costruzioni": (-6, 9, "right"), "Serv. professionali": (7, -9, "left"), "Manifattura": (6, 7, "left"), "Informazione": (7, -2, "left"), "Serv. amministrativi": (7, -3, "left"), "Trasporti": (7, 0, "left")}
+    for s, r in d.iterrows():
+        dx, dy, ha = off.get(str(s), (6, 4, "left")); ax.annotate(str(s), (r.excess, r.gap), xytext=(dx, dy), textcoords="offset points", fontsize=10.5, color=INK, ha=ha, va="center")
+    ax.axhline(0, color=INK2, lw=0.8); ax.set_xlabel("Microimprese: Italia − mediana (punti di quota)"); ax.set_ylabel("Crescita: Italia − mediana (punti l'anno)", fontsize=11); ax.set_xlim(-13, 28); fig.tight_layout(); save(fig, "02_settori_e_ritardo")
+
+
+def cover02(size: pd.DataFrame) -> None:
+    """Share/preview image 1200x630: the micro share of employment, Italy and the median of the others."""
+    m = SG.micro_shares(size, "new")[S02_YEAR].dropna(); it, eu = m[ITALY], m.drop(ITALY).median()
+    bg, fg, dim = "#14181f", "#ffffff", "#9aa3b2"
+    fig = plt.figure(figsize=(12, 6.3), dpi=100, facecolor=bg); ax = fig.add_axes((0, 0, 1, 1)); ax.set_xlim(0, 12); ax.set_ylim(0, 6.3); ax.axis("off")
+    ax.text(6, 5.55, "Le piccole imprese", color=fg, fontsize=40, fontweight="bold", ha="center", va="center")
+    ax.text(6, 4.85, f"Occupati in imprese sotto i 10 addetti, {S02_YEAR}", color=dim, fontsize=24, ha="center", va="center")
+    for y, val, col, who in [(3.45, it, ITALY_C, "Italia"), (1.45, eu, EU_C, "Mediana UE")]:
+        ax.text(0.8, y, f"{val:.0f}%", color=col, fontsize=88, fontweight="bold", ha="left", va="center")
+        ax.text(5.4, y + 0.42, who, color=col, fontsize=44, fontweight="bold", ha="left", va="center")
+        ax.barh(y - 0.38, 5.6 * val / it, left=5.4, height=0.5, color=col)
+    ax.text(11.0, 0.3, "Cifre significative", color=dim, fontsize=15, ha="right", va="center")
+    OUT.mkdir(parents=True, exist_ok=True); fig.savefig(OUT / "02_copertina.png", dpi=100, facecolor=bg); plt.close(fig)
+
+
 if __name__ == "__main__":
     warnings.filterwarnings("ignore")
     apply_style(); apply_mobile_style(); style.FIG_DIR = OUT
     only = set(sys.argv[1:])
-    panel, lh = load_panel(), load_long()
     if not only or "00" in only:
+        panel, lh = load_panel(), load_long()
         fig00_decomposition(panel); fig00_long(lh); fig00_synth(lh); fig00_governments(lh); cover00(panel)
     if not only or "01" in only:
         sec = load_sectors(); sample = _sector_sample(sec); oth = [c for c in sample if c != ITALY]
         print(f"01 sample: {len(sample)} members with all nine sections in {SECT_A} and {SECT_B}; missing: {sorted(set(EU27_ISO3) - set(sample))}")
         fig01_index(sec, oth); fig01_shift(sec, oth); fig01_sectors(sec, oth); fig01_industries(); fig01_myths(); fig01_ict(); fig01_torneria(); fig01_tfp(); cover01(sec, oth)
+    if not only or "02" in only:
+        size, sec, s64, panel = SC.load_size(), load_sectors(), load_sectors64(), load_panel()
+        fig02_micro(size); fig02_sections(size); fig02_classes(size, panel); fig02_example(); fig02_split(size, panel); fig02_coverage(SG.coverage_sensitivity(size, sec, panel)); fig02_time(size, sec)
+        fig02_cross(SG.growth_link(size, sec)); fig02_sections_gap(SG.section_link(size, s64)); cover02(size)

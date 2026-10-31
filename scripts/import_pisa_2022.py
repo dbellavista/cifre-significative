@@ -9,7 +9,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from cifresignificative.countries import NAMES
+from cifresignificative.core.countries import NAMES
 
 SRC = Path("data/external/source/pisa2022_ch2_tables.xlsx")
 OUT = Path("data/external/pisa_2022.csv")

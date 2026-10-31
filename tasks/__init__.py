@@ -5,9 +5,10 @@ Commands use ``rtk`` (condensed output) automatically when it is on the PATH; pa
 """
 from invoke import Collection
 
-from tasks import dev, docs, test
+from tasks import dev, docs, study, test
 
 ns = Collection()
 ns.add_collection(Collection.from_module(dev, name="dev"))
 ns.add_collection(Collection.from_module(test, name="test"))
 ns.add_collection(Collection.from_module(docs, name="docs"))
+ns.add_collection(Collection.from_module(study, name="study"))

@@ -10,7 +10,11 @@ import pandas as pd
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
-from cifresignificative.analysis.data import EU27_ISO3, ITALY, eu_median_ex_italy
+from cifresignificative.studies.italy_productivity.analysis.data import (
+    EU27_ISO3,
+    ITALY,
+    eu_median_ex_italy,
+)
 
 _THEMES: dict[str, dict[str, Any]] = {  # light and dark steps of the project palette (dark steps are the validated dark-surface variants)
     "light": {"italy": "#2a78d6", "eu": "#eb6834", "peer": "#b9b8b2", "highlight": ["#1baf7a", "#eda100", "#e87ba4", "#008300", "#4a3aa7", "#e34948"],

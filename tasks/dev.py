@@ -21,5 +21,5 @@ def verify(c: Context, fix: bool = False, ty: bool = True, rtk: bool | None = No
 
 @task(help={**HELP, "scope": "space-separated files or directories (default: the whole repo)"})
 def scope_checks(c: Context, scope: str = PATHS, fix: bool = False, ty: bool = True, rtk: bool | None = None) -> None:
-    """Checks on a touched scope, e.g. --scope "src/cifresignificative/analysis tests/test_hf.py"."""
+    """Checks on a touched scope, e.g. --scope "src/cifresignificative/studies/italy_productivity/analysis tests/studies/italy_productivity/test_hf.py"."""
     _checks(c, scope.strip() or PATHS, fix, ty, rtk)

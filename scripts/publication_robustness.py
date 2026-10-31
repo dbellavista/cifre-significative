@@ -6,8 +6,16 @@ import warnings
 
 import numpy as np
 
-from cifresignificative.analysis.data import ITALY, load_long, long_wide
-from cifresignificative.analysis.synth import placebo_ratios, rmspe, synthetic_control
+from cifresignificative.studies.italy_productivity.analysis.data import (
+    ITALY,
+    load_long,
+    long_wide,
+)
+from cifresignificative.studies.italy_productivity.analysis.synth import (
+    placebo_ratios,
+    rmspe,
+    synthetic_control,
+)
 
 warnings.filterwarnings("ignore")
 END = 2025

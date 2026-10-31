@@ -1,12 +1,12 @@
 # Download protocol
 
 Order of attempts for any data source. Stop at the first that works; record the URL and date in `data/raw/manifest.json`
-(`cifresignificative.sources._common.record`).
+(`cifresignificative.core.sources._common.record`).
 
 1. **Official API or bulk file.** Eurostat Statistics API, World Bank `wbgapi`, IMF DataMapper, OECD SDMX (`sdmx.oecd.org`), AMECO zip, EC Excel tables. Preferred: exact, reproducible, polite.
 2. **Plain HTTP to a stable URL.** Some sites block page URLs but serve files (oecd.org returns 403 to scripts, yet `https://stat.link/files/<doi-id>/<id>.xlsx` StatLinks download fine; the StatLink IDs can be found in an archived copy of the page on web.archive.org). Commission "docsroom" documents serve PDFs directly (text PDFs: use `pypdf`, no OCR needed).
-3. **Headless browser that reads the page's own data requests** (`src/cifresignificative/sources/browser.py`, Playwright + Chromium). Open the page, capture the JSON/XHR responses, decode them. Real browsers pass checks that scripts do not (oecd.org pages load headless). Example: `sources/procurement.py` opens the Single Market Scoreboard, finds the embedded public Power BI report, walks its 11 pages and decodes the `querydata` responses (`sources/powerbi.py`).
-4. **Visible browser with a human step** (`cifresignificative.fetch --interactive`, `browser.handoff`). Used only if a page needs a person (a check the user must pass). The profile is persistent (`data/.browser_profile/`, gitignored) so a solved check is remembered. Never automate solving a check.
+3. **Headless browser that reads the page's own data requests** (`src/cifresignificative/core/sources/browser.py`, Playwright + Chromium). Open the page, capture the JSON/XHR responses, decode them. Real browsers pass checks that scripts do not (oecd.org pages load headless). Example: `sources/procurement.py` opens the Single Market Scoreboard, finds the embedded public Power BI report, walks its 11 pages and decodes the `querydata` responses (`sources/powerbi.py`).
+4. **Visible browser with a human step** (`cifresignificative.core.fetch --interactive`, `browser.handoff`). Used only if a page needs a person (a check the user must pass). The profile is persistent (`data/.browser_profile/`, gitignored) so a solved check is remembered. Never automate solving a check.
 
 A person's own browser session can stand in for step 4: ask them to open the page, use the browser's developer tools to "Save all as HAR" (or export the one response), and read only the data response from it. Do not read cookies, tokens or other requests from the file.
 

@@ -2,7 +2,8 @@
 data/raw
 data/external/source
 data/.browser_profile
-notebooks
-reports/figures
-reports/dashboard_screenshots
+studies/*/notebooks
+studies/*/reports/figures
+studies/*/reports/dashboard_screenshots
+studies/*/publications
 .git

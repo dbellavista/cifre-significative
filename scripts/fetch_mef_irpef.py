@@ -8,7 +8,7 @@ Classifications: classi_reddito, ventili, regione, attivita, eta, fatturato, com
 import argparse
 from pathlib import Path
 
-from cifresignificative.sources import mef_portal as P
+from cifresignificative.core.sources import mef_portal as P
 
 
 def main(argv=None) -> int:

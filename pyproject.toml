@@ -46,7 +46,7 @@ dev = [
 ]
 
 [tool.ruff]
-exclude = ["notebooks"]
+exclude = ["studies/*/notebooks"]
 
 [tool.ruff.lint]
 # keep ruff's default rule set (broad since 0.17) and add import sorting; E501 stays off on purpose: the code base is dense, with long lines

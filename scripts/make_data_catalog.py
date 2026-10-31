@@ -9,8 +9,8 @@ from pathlib import Path
 
 import pandas as pd
 
-from cifresignificative import catalog
-from cifresignificative.sources import ameco, imf, oecd, procurement, worldbank
+from cifresignificative.core import catalog
+from cifresignificative.core.sources import ameco, imf, oecd, procurement, worldbank
 
 DOC = Path("docs/data_catalog.md")
 PANEL_PATH = Path("data/processed/panel.parquet")
@@ -89,7 +89,7 @@ def render(rows: list[tuple]) -> str:
            f"{len(rows)} indicators in `data/processed/panel.parquet` (long format). Column details and caveats: `data_dictionary.md`.", "",
            "## Sources", "",
            "| provider | access | code | refresh |", "|---|---|---|---|",
-           "| Eurostat | Statistics API (JSON-stat) | `sources/eurostat.py`, `catalog.py` | `uv run python -m cifresignificative.fetch --force` |",
+           "| Eurostat | Statistics API (JSON-stat) | `sources/eurostat.py`, `catalog.py` | `uv run python -m cifresignificative.core.fetch --force` |",
            "| World Bank | `wbgapi` (WDI, EdStats, WGI) | `sources/worldbank.py` | same |",
            "| IMF WEO | DataMapper API | `sources/imf.py` | same |",
            "| AMECO (EC) | bulk CSV zip | `sources/ameco.py` | same |",
