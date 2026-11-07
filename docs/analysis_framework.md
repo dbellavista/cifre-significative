@@ -179,3 +179,7 @@ Code: `src/cifresignificative/core/sources/eu_payments.py` (Commission's "Histor
 - **Germany and Belgium.** The EQI exists only at NUTS1 for them: outcomes aggregated from NUTS2 (sums for extensive, population weights for rates, all children required), EQI rows at NUTS1, their NUTS2 rows and SBS predictors left out; EQI pairs only compared. Result: unchanged (23 of 24 survivors in 2017 both ways).
 - **Limits.** Commission payments by calendar year, not spending on the ground; Interreg excluded; split regions dropped; funds are allocated by need; OpenCoesione (national co-financing, 2014-2020, Italy only) not used; population weights approximate rates; no spatial filter at NUTS1; Belgium has three regions.
 
+
+### Municipal declared-income source follow-up
+
+Source income per recipient and recipient ratios use overlapping fiscal frequencies: they are not mutually exclusive population shares and do not follow the same people. The identity amount/common-denominator = recipient-ratio × amount/recipient can support an accounting split only after component totals, missing cells, tax definitions and a common price basis are reconciled. With unreconciled components, report them separately and do not label the residual as an economic 'other income' explanation. A common national deflator preserves city growth ranks; chaining published rounded annual rates can differ from direct annual-index endpoints, and changing ECOICOP vintage must remain an explicit sensitivity or documented revision.

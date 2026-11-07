@@ -6,6 +6,7 @@ Usage: uv run python scripts/publication_figures.py [00 ...]   -> figures/NN_nam
 the post are printed so they can be re-checked against the notebooks before publishing.
 """
 import sys
+import textwrap
 import warnings
 from pathlib import Path
 
@@ -168,20 +169,29 @@ def fig00_governments(lh) -> None:
     save(fig, "00_crescita_per_governo")
 
 
+SAFE_X = (3.6, 8.4)  # inches of the 12-inch cover: a centred column inside the narrowest crop (4:5 portrait keeps 3.48-8.52); square (3.0-9.0) and 1.5:1 (1.27-10.73) are wider
+
+
+def _cover(name: str, title: str, subtitle: str, rows: list[tuple[str, float, str]], text, scale: float) -> None:
+    """Share/preview image 1200x630 that survives landscape, square and 4:5 portrait centre crops: one stacked column inside SAFE_X (title, subtitle, then label, number and bar per row); the drawn text extents are asserted."""
+    bg, fg, dim = "#14181f", "#ffffff", "#9aa3b2"; x0, x1 = SAFE_X
+    fig = plt.figure(figsize=(12, 6.3), dpi=100, facecolor=bg); ax = fig.add_axes((0, 0, 1, 1)); ax.set_xlim(0, 12); ax.set_ylim(0, 6.3); ax.axis("off")
+    texts = [ax.text(6, 5.65, textwrap.fill(title, 22), color=fg, fontsize=26, fontweight="bold", ha="center", va="center", linespacing=1.15), ax.text(6, 4.8, textwrap.fill(subtitle, 36), color=dim, fontsize=15, ha="center", va="center")]
+    for y, (who, val, col) in zip((3.5, 1.7), rows, strict=True):  # series palette, same as the figures
+        texts += [ax.text(x0, y + 0.62, who, color=col, fontsize=22, fontweight="bold", ha="left", va="center"), ax.text(x0, y, text(val), color=col, fontsize=62, fontweight="bold", ha="left", va="center")]
+        ax.barh(y - 0.55, (x1 - x0) * val / scale, left=x0, height=0.22, color=col)
+    texts.append(ax.text(6, 0.3, "Cifre significative", color=dim, fontsize=12, ha="center", va="center"))
+    fig.canvas.draw(); inv = ax.transData.inverted()
+    for t in texts:
+        a, b = inv.transform(t.get_window_extent()); assert a[0] >= x0 - 0.01 and b[0] <= x1 + 0.01, f"cover {name}: {t.get_text()!r} leaves the portrait-crop safe zone ({a[0]:.2f}-{b[0]:.2f} in)"
+    OUT.mkdir(parents=True, exist_ok=True); fig.savefig(OUT / f"{name}_copertina.png", dpi=100, facecolor=bg); plt.close(fig)
+
+
 def cover00(panel) -> None:
     """Share/preview image 1200x630: the two numbers of the post, readable at thumbnail size and under a centre crop."""
     tot = gdp_pc_growth_decomposition(panel, 2005, END)["real GDP per head"]; it, eu = np.expm1(tot[ITALY] / 100) * 100, np.expm1(tot.drop(ITALY).median() / 100) * 100
     print(f"00 cover: Italy {it:+.1f}%, median of the other {len(tot) - 1} {eu:+.1f}% (real GDP per head 2005-{END})")
-    bg, fg, dim = "#14181f", "#ffffff", "#9aa3b2"
-    fig = plt.figure(figsize=(12, 6.3), dpi=100, facecolor=bg); ax = fig.add_axes((0, 0, 1, 1)); ax.set_xlim(0, 12); ax.set_ylim(0, 6.3); ax.axis("off")
-    ax.text(6, 5.55, "L'Italia non è povera, è ferma", color=fg, fontsize=40, fontweight="bold", ha="center", va="center")
-    ax.text(6, 4.85, f"PIL reale per abitante, 2005 - {END}", color=dim, fontsize=24, ha="center", va="center")
-    for y, val, col, who in [(3.45, it, ITALY_C, "Italia"), (1.45, eu, EU_C, "Mediana UE")]:  # series palette, same as the figures
-        ax.text(0.8, y, f"{val:+.0f}%".replace("-", "−"), color=col, fontsize=88, fontweight="bold", ha="left", va="center")
-        ax.text(5.4, y + 0.42, who, color=col, fontsize=44, fontweight="bold", ha="left", va="center")
-        ax.barh(y - 0.38, 5.6 * val / eu, left=5.4, height=0.5, color=col)
-    ax.text(11.0, 0.35, "Cifre significative", color=dim, fontsize=15, ha="right", va="center")
-    OUT.mkdir(parents=True, exist_ok=True); fig.savefig(OUT / "00_copertina.png", dpi=100, facecolor=bg); plt.close(fig)
+    _cover("00", "L'Italia non è povera, è ferma", f"PIL reale per abitante, 2005 - {END}", [("Italia", it, ITALY_C), ("Mediana UE", eu, EU_C)], lambda v: f"{v:+.0f}%".replace("-", "−"), eu)
 
 
 SECTORS_IT = {"A": "Agricoltura", "B-E": "Industria", "F": "Costruzioni", "G-I": "Commercio, trasporti,\nalloggio e ristorazione", "J": "Informazione e\ncomunicazione", "K": "Finanza e assicurazioni",
@@ -363,16 +373,7 @@ def cover01(s: pd.DataFrame, others: list[str]) -> None:
     """Share/preview image 1200x630: the two numbers of the post (within-sector productivity growth, Italy and the median of the others)."""
     dec = pd.DataFrame({c: shift_share(s, c, SECT_A, SECT_B) for c in [ITALY, *others]}).T["within-sector productivity"]; it, eu = dec[ITALY], dec.drop(ITALY).median()
     print(f"01 cover: Italy {it:+.1f}%, median of the other {len(dec) - 1} {eu:+.1f}% (within-sector productivity per hour {SECT_A}-{SECT_B})")
-    bg, fg, dim = "#14181f", "#ffffff", "#9aa3b2"
-    fig = plt.figure(figsize=(12, 6.3), dpi=100, facecolor=bg); ax = fig.add_axes((0, 0, 1, 1)); ax.set_xlim(0, 12); ax.set_ylim(0, 6.3); ax.axis("off")
-    ax.text(6, 5.55, "Un problema di produttività", color=fg, fontsize=40, fontweight="bold", ha="center", va="center")
-    ax.text(6, 4.85, f"Produttività oraria dentro i settori, {SECT_A} - {SECT_B}", color=dim, fontsize=24, ha="center", va="center")
-    for y, val, col, who in [(3.45, it, ITALY_C, "Italia"), (1.45, eu, EU_C, "Mediana UE")]:
-        ax.text(0.8, y, f"{val:+.0f}%".replace("-", "−"), color=col, fontsize=88, fontweight="bold", ha="left", va="center")
-        ax.text(5.4, y + 0.42, who, color=col, fontsize=44, fontweight="bold", ha="left", va="center")
-        ax.barh(y - 0.38, 5.6 * val / eu, left=5.4, height=0.5, color=col)
-    ax.text(11.0, 0.3, "Cifre significative", color=dim, fontsize=15, ha="right", va="center")
-    OUT.mkdir(parents=True, exist_ok=True); fig.savefig(OUT / "01_copertina.png", dpi=100, facecolor=bg); plt.close(fig)
+    _cover("01", "Un problema di produttività", f"Produttività oraria nei settori, {SECT_A} - {SECT_B}", [("Italia", it, ITALY_C), ("Mediana UE", eu, EU_C)], lambda v: f"{v:+.0f}%".replace("-", "−"), eu)
 
 
 CLASS_NAMES_H = ["0-9 addetti (micro)", "10-19 addetti", "20-49 addetti", "50-249 addetti (medie)", "250 e oltre (grandi)"]
@@ -517,16 +518,7 @@ def fig02_sections_gap(sl: dict[str, pd.DataFrame]) -> None:
 def cover02(size: pd.DataFrame) -> None:
     """Share/preview image 1200x630: the micro share of employment, Italy and the median of the others."""
     m = SG.micro_shares(size, "new")[S02_YEAR].dropna(); it, eu = m[ITALY], m.drop(ITALY).median()
-    bg, fg, dim = "#14181f", "#ffffff", "#9aa3b2"
-    fig = plt.figure(figsize=(12, 6.3), dpi=100, facecolor=bg); ax = fig.add_axes((0, 0, 1, 1)); ax.set_xlim(0, 12); ax.set_ylim(0, 6.3); ax.axis("off")
-    ax.text(6, 5.55, "Le piccole imprese", color=fg, fontsize=40, fontweight="bold", ha="center", va="center")
-    ax.text(6, 4.85, f"Occupati in imprese sotto i 10 addetti, {S02_YEAR}", color=dim, fontsize=24, ha="center", va="center")
-    for y, val, col, who in [(3.45, it, ITALY_C, "Italia"), (1.45, eu, EU_C, "Mediana UE")]:
-        ax.text(0.8, y, f"{val:.0f}%", color=col, fontsize=88, fontweight="bold", ha="left", va="center")
-        ax.text(5.4, y + 0.42, who, color=col, fontsize=44, fontweight="bold", ha="left", va="center")
-        ax.barh(y - 0.38, 5.6 * val / it, left=5.4, height=0.5, color=col)
-    ax.text(11.0, 0.3, "Cifre significative", color=dim, fontsize=15, ha="right", va="center")
-    OUT.mkdir(parents=True, exist_ok=True); fig.savefig(OUT / "02_copertina.png", dpi=100, facecolor=bg); plt.close(fig)
+    _cover("02", "Le piccole imprese", f"Occupati in imprese sotto i 10 addetti, {S02_YEAR}", [("Italia", it, ITALY_C), ("Mediana UE", eu, EU_C)], lambda v: f"{v:.0f}%", it)
 
 
 if __name__ == "__main__":
