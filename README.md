@@ -6,6 +6,16 @@ Dal 2026 c'è anche la sezione [Cifre Significative - Cesena edition](https://da
 
 Tutto è **descrittivo, mai causale**: le associazioni non dimostrano cause. Le sei regole editoriali della serie sono nella pagina "About" del Substack.
 
+## Gli articoli
+Un articolo per risultato; i numeri citati si ricalcolano con il codice di questo repository.
+
+| serie | articolo | dove sono i notebook |
+|---|---|---|
+| Cifre significative (Italia) | [L'Italia non è povera, è ferma](https://danielebellavista.substack.com/p/litalia-non-e-povera-e-ferma) | `studies/italy_productivity/notebooks/` |
+| Cifre significative (Italia) | [Un problema di produttività dentro ogni settore](https://danielebellavista.substack.com/p/un-problema-di-produttivita-dentro) | `studies/italy_productivity/notebooks/` |
+| Cifre significative (Italia) | [Le piccole imprese pesano, ma non spiegano la frenata](https://danielebellavista.substack.com/p/le-piccole-imprese-pesano-ma-non) | `studies/italy_productivity/notebooks/` |
+| Cesena edition | [Cesena cresce? Dipende da cosa misuriamo](https://danielebellavista.substack.com/p/cesena-cresce-dipende-da-cosa-misuriamo) | `studies/cesena/notebooks/` |
+
 ## Cosa c'è
 | cartella | contenuto |
 |---|---|
