@@ -5,6 +5,7 @@ Each folder is one self-contained study built on the shared platform in `src/cif
 | study | question | status |
 |---|---|---|
 | [`italy_productivity/`](italy_productivity/) | Italy against the other EU27 members: productivity, wages, the South, public finance | active (Substack series) |
+| [`cesena/`](cesena/) | Cesena (`040007`) against 12 Emilia-Romagna peer municipalities: fiscal policy, public investments, real-economy Shift-Share & firm size classes, household income, demography & commuter belt (`2008–2026`) | active (notebooks 01–05, dashboard; reviewed 2026-10-30) |
 | [`_template/`](_template/) | skeleton copied by `inv study.new` | |
 
 A study is three folders with the same name:

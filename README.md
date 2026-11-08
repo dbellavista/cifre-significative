@@ -2,6 +2,8 @@
 
 Codice, notebook e tabelle dietro la serie di post [Cifre significative](https://danielebellavista.substack.com/) (Italia confrontata con gli altri paesi dell'Unione Europea, su dati pubblici e con metodi verificabili). _English: reproducible pipeline and analysis comparing Italy with the other EU27 members._
 
+Dal 2026 c'è anche la sezione [Cifre Significative - Cesena edition](https://danielebellavista.substack.com/s/cifre-significative-cesena/), con lo studio su Cesena (`studies/cesena/`).
+
 Tutto è **descrittivo, mai causale**: le associazioni non dimostrano cause. Le sei regole editoriali della serie sono nella pagina "About" del Substack.
 
 ## Cosa c'è
@@ -10,6 +12,7 @@ Tutto è **descrittivo, mai causale**: le associazioni non dimostrano cause. Le 
 | `src/cifresignificative/` | pipeline (scarico, pulizia), analisi e cruscotto Streamlit |
 | `studies/italy_productivity/notebooks/` | 42 notebook eseguiti, con i risultati e le note a margine |
 | `studies/italy_productivity/reports/findings.md` | sintesi dei risultati con numeri e limiti; i grafici sono in `studies/italy_productivity/reports/figures/` |
+| `studies/cesena/` | studio su Cesena: 5 notebook eseguiti, `reports/findings.md` (risultati con numeri e limiti), README con fonti e insidie, `reports/income_evidence/` (tabelle dei redditi usate nel post di lancio) |
 | `docs/` | metodologia, schema dei dati, catalogo degli indicatori, quadro delle analisi |
 | `data/external/*.csv` | tabelle curate a mano (governi, politiche, glossario, tabelle compilate da fonti aperte) |
 | `tests/` | test della pipeline e dei metodi statistici |

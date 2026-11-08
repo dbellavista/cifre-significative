@@ -15,6 +15,7 @@ import numpy as np
 import pandas as pd
 from matplotlib.axes import Axes
 
+from cifresignificative.core.sources import oecd_regulation as OR
 from cifresignificative.core.viz import style
 from cifresignificative.core.viz.style import (
     EU_C,
@@ -26,6 +27,7 @@ from cifresignificative.core.viz.style import (
     apply_style,
 )
 from cifresignificative.studies.italy_productivity.analysis import industry_panel
+from cifresignificative.studies.italy_productivity.analysis import regulation as RGL
 from cifresignificative.studies.italy_productivity.analysis import size_class as SC
 from cifresignificative.studies.italy_productivity.analysis import size_growth as SG
 from cifresignificative.studies.italy_productivity.analysis.data import (
@@ -521,6 +523,49 @@ def cover02(size: pd.DataFrame) -> None:
     _cover("02", "Le piccole imprese", f"Occupati in imprese sotto i 10 addetti, {S02_YEAR}", [("Italia", it, ITALY_C), ("Mediana UE", eu, EU_C)], lambda v: f"{v:.0f}%", it)
 
 
+S03_PMR = 2018  # PMR wave matched to the growth window of the test; the professions' and retail indicators are identical in 2023
+POS03_IT = {"ACCOUNTANTS": "Commercialisti", "ARCHITECTS": "Architetti", "SERVBARRIER": "Barriere nei servizi", "RETAIL_TRADE": "Commercio al dettaglio", "ENGINEERS": "Ingegneri", "LAWYERS": "Avvocati",
+            "ECOMM": "Telecomunicazioni", "ENERGY": "Energia", "TRANSPORT": "Trasporti", "NETWORK_SECTORS": "Settori a rete (media)"}
+SEC03_IT = {"D": "Elettricità e gas", "G47": "Commercio al dettaglio", "H49": "Trasporto terrestre", "J61": "Telecomunicazioni", "M69_M70": "Servizi legali e contabili", "M71": "Architettura e ingegneria"}
+
+
+def fig03_position(pmr: pd.DataFrame) -> None:
+    """Italy's PMR indicator against the median of the other members, ordered by Italy's excess, with Italy's rank."""
+    pos = RGL.position(pmr, measures=list(POS03_IT), years=(S03_PMR,)).set_index("measure").loc[list(POS03_IT)]
+    pos = pos.assign(diff=pos.italy - pos.median_others).sort_values("diff"); print("03 position:\n", pos.round(2).to_string())
+    fig, ax = plt.subplots(figsize=(5.4, 5.4)); y = np.arange(len(pos))
+    ax.barh(y, pos.italy, color=ITALY_C, height=0.6); ax.scatter(pos.median_others, y, marker="D", s=62, color=EU_C, zorder=3, edgecolor=SURFACE)
+    for i, (m, r) in enumerate(pos.iterrows()): ax.text(6.6, i, f"{r.italy:.1f} / {r.median_others:.1f}  ({int(r['rank'])}°)", va="center", ha="right", fontsize=10.5, color=INK)
+    ax.set_yticks(y, [POS03_IT[m] for m in pos.index]); ax.set_xlim(0, 6.7); ax.set_xticks([0, 2, 4]); ax.grid(axis="y", visible=False); ax.set_xlabel("Indicatore OCSE (0-6, più alto = più restrittivo)", fontsize=11); _top_axis(ax, "Indicatore OCSE (0-6)")
+    ax.set_title(f"Regolazione dei mercati, {S03_PMR}\nItalia (barra), mediana degli altri (rombo), posizione", loc="left", fontsize=12, pad=12); fig.tight_layout(); save(fig, "03_posizione")
+
+
+def fig03_scatter(d: pd.DataFrame, res: pd.DataFrame) -> None:
+    """The 123 country x sector pairs: within-sector rank of the regulation against the within-sector rank of productivity growth."""
+    pooled = res[res.sector == "pooled"].iloc[0]; print(f"03 scatter: n {len(d)}, rho {pooled.rho:+.3f}, p {pooled.p:.3f}")
+    fig, ax = plt.subplots(figsize=(5.4, 5.0)); o = d[d.iso3 != ITALY]; it = d[d.iso3 == ITALY]
+    ax.scatter(o.rr, o.rg, s=26, color="#c9ced6", zorder=2); ax.scatter(it.rr, it.rg, s=90, color=ITALY_C, zorder=3, edgecolor=SURFACE)
+    ax.axhline(0, color=INK2, lw=0.8); ax.axvline(0, color=INK2, lw=0.8); ax.set_xlabel("Regolazione del settore (← meno restrittivo, più restrittivo →)", fontsize=10.5); ax.set_ylabel("Crescita della produttività\n(← più lenta, più rapida →)", fontsize=10.5)
+    ax.set_xticks([]); ax.set_yticks([]); ax.text(0.03, 0.97, f"Correlazione {pooled.rho:+.2f}".replace("-", "−"), transform=ax.transAxes, va="top", fontsize=12, fontweight="bold", color=INK); ax.text(0.03, 0.89, "Punti blu: Italia", transform=ax.transAxes, va="top", fontsize=11, color=ITALY_C, fontweight="bold")
+    ax.set_title(f"{len(d)} coppie paese-settore, sei settori\nposizione dentro ogni settore", loc="left", fontsize=12.5); fig.tight_layout(); save(fig, "03_legame")
+
+
+def fig03_italy(it: pd.DataFrame) -> None:
+    """Italy's productivity growth per year against the median of the others, sector by sector, ordered by Italy's regulation rank."""
+    it = it.assign(lab=it.nace_r2.map(SEC03_IT)).sort_values("reg_rank"); print("03 italy:\n", it.round(2).to_string())
+    fig, ax = plt.subplots(figsize=(5.4, 4.6)); y = np.arange(len(it))[::-1]
+    ax.axvline(0, color=INK, lw=1.0); ax.scatter(it.growth_median_others_pct, y, marker="D", s=70, color=EU_C, zorder=3, edgecolor=SURFACE); ax.scatter(it.growth_italy_pct, y, s=90, color=ITALY_C, zorder=4, edgecolor=SURFACE)
+    for yy, (_, r) in zip(y, it.iterrows(), strict=True): ax.plot([r.growth_median_others_pct, r.growth_italy_pct], [yy, yy], color="#c9ced6", lw=2.4, zorder=1); ax.text(4.9, float(yy), f"{r.growth_italy_pct:+.1f} / {r.growth_median_others_pct:+.1f}".replace("-", "−"), va="center", ha="left", fontsize=10.5, color=INK)
+    ax.set_yticks(y, [f"{r.lab} ({int(r.reg_rank)}° su {int(r.n)})" for _, r in it.iterrows()]); ax.set_xlim(-2.6, 9.2); ax.set_xticks([-2, 0, 2, 4]); ax.grid(axis="y", visible=False); ax.set_xlabel("Crescita della produttività oraria (% l'anno)", fontsize=11); _top_axis(ax, "% l'anno")
+    fig.suptitle("Dal 2005-07 al 2017-19, per settore\nItalia (cerchio), mediana degli altri (rombo)", x=0.02, ha="left", fontsize=12, fontweight="bold"); fig.tight_layout(); save(fig, "03_italia_settori")
+
+
+def cover03(pmr: pd.DataFrame) -> None:
+    """Share/preview image 1200x630: the accountants' regulation index, Italy and the median of the others."""
+    p = RGL.position(pmr, measures=["ACCOUNTANTS"], years=(S03_PMR,)).iloc[0]; print(f"03 cover: Italy {p.italy:.2f}, median {p.median_others:.2f}, rank {p['rank']:.0f}")
+    _cover("03", "La regolazione dei mercati", f"Indice OCSE per i commercialisti, {S03_PMR} (0-6)", [("Italia", p.italy, ITALY_C), ("Mediana UE", p.median_others, EU_C)], lambda v: f"{v:.1f}", p.italy)
+
+
 if __name__ == "__main__":
     warnings.filterwarnings("ignore")
     apply_style(); apply_mobile_style(); style.FIG_DIR = OUT
@@ -536,3 +581,6 @@ if __name__ == "__main__":
         size, sec, s64, panel = SC.load_size(), load_sectors(), load_sectors64(), load_panel()
         fig02_micro(size); fig02_sections(size); fig02_classes(size, panel); fig02_example(); fig02_split(size, panel); fig02_coverage(SG.coverage_sensitivity(size, sec, panel)); fig02_time(size, sec)
         fig02_cross(SG.growth_link(size, sec)); fig02_sections_gap(SG.section_link(size, s64)); cover02(size)
+    if not only or "03" in only:
+        pmr = OR.load_pmr(); d03 = RGL.sector_data(pmr); res03 = RGL.test(d03)
+        fig03_position(pmr); fig03_scatter(d03, res03); fig03_italy(RGL.italy_rows(d03)); cover03(pmr)

@@ -1,0 +1,9 @@
+name = "cesena"               # must equal the folder name
+title = "Cesena: economia, bilanci e politiche comunali"
+description = "Come si posiziona Cesena rispetto ai comuni capoluogo e medi dell'Emilia-Romagna su bilanci, investimenti pubblici, tessuto produttivo e redditi?"
+status = "active"               # draft | active | archived
+notebooks = "notebooks"         # folders are relative to this file
+cells = "notebook_cells"        # package with the notebook cells (scripts/make_notebooks.py)
+reports = "reports"
+publications = ""               # empty when the study has no public series
+dashboard = "cifresignificative.studies.cesena.dashboard"

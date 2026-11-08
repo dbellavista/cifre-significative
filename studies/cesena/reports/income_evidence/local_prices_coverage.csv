@@ -1,0 +1,14 @@
+comune_id,comune,istat_province_code,series_geography,province_first_year,province_last_year,municipal_observations,coverage_2008_2024,coverage_2008_2018,coverage_2018_2024
+040007,Cesena,ITD58,province proxy; sampling geography requires checking,2016,2024,0,False,False,True
+040012,Forlì,ITD58,province proxy; sampling geography requires checking,2016,2024,0,False,False,True
+099014,Rimini,ITD59,province proxy; sampling geography requires checking,2016,2024,0,False,False,True
+039014,Ravenna,ITD57,province proxy; sampling geography requires checking,2016,2024,0,False,False,True
+037032,Imola,ITD55,province proxy; sampling geography requires checking,2016,2024,0,False,False,True
+036005,Carpi,ITD54,province proxy; sampling geography requires checking,2016,2024,0,False,False,True
+035033,Reggio nell'Emilia,ITD53,province proxy; sampling geography requires checking,2016,2024,0,False,False,True
+038008,Ferrara,ITD56,province proxy; sampling geography requires checking,2016,2024,0,False,False,True
+036023,Modena,ITD54,province proxy; sampling geography requires checking,2016,2024,0,False,False,True
+034027,Parma,ITD52,province proxy; sampling geography requires checking,2016,2024,0,False,False,True
+033032,Piacenza,ITD51,province proxy; sampling geography requires checking,2016,2024,0,False,False,True
+039010,Faenza,ITD57,province proxy; sampling geography requires checking,2016,2024,0,False,False,True
+037006,Bologna,ITD55,province proxy; sampling geography requires checking,2016,2024,0,False,False,True

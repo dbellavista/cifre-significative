@@ -117,7 +117,7 @@ Code: `src/cifresignificative/studies/italy_productivity/analysis/regulation.py`
 | G4 `g4_italy_sectors`, G5 `g5_italy_placebo` | Italy's regulation and growth ranks by sector; placebo ranking of the mean gap to the pooled relation |
 | G6 `g6_null` | shuffled-regulation null |
 
-Known limits: PMR measured at the end of the growth window with no earlier wave, so no ordering; six sectors, 17-26 countries each (the test cannot see a correlation below about 0.18); coarse matching of indicators to sectors; CompNet (firm-level dispersion) was requested and declined (2026-10-22) and is not used; notebook 42 uses the public size-class statistics instead. Descriptive associations only.
+Known limits: PMR measured at the end of the growth window with no earlier wave, so no ordering; six sectors, 17-26 countries each (approximate 95% interval of the pooled correlation -0.11 to +0.24: a weak negative link cannot be ruled out); coarse matching of indicators to sectors; CompNet (firm-level dispersion) was requested and declined (2026-10-22) and is not used; notebook 42 uses the public size-class statistics instead. Descriptive associations only.
 
 ## Wage-setting institutions and pass-through (notebook 36)
 Code: `src/cifresignificative/studies/italy_productivity/analysis/bargaining.py`, loader `sources/oecd_bargaining.py` (OECD/AIAS coverage `DF_CBC` and union density `DF_TUD` via SDMX; raw `data/raw/oecd/cbc.csv`, `tud.csv`; `uv run python -m cifresignificative.core.fetch --only oecd_bargaining`), runner `experiments.run_bargaining_all()` (about 10 seconds, `w1`-`w4` in `data/processed/correlations/`).

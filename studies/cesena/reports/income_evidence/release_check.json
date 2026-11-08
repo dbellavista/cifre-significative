@@ -1,0 +1,172 @@
+[
+  {
+    "year": 2008,
+    "url": "https://www1.finanze.gov.it/finanze/analisi_stat/public/v_4_0_0/contenuti/Redditi_e_principali_variabili_IRPEF_su_base_comunale_CSV_2008.zip",
+    "retrieved_at": "2026-11-06T16:51:44.333144+00:00",
+    "sha256": "a5f61535adf8b5e9b95d6819d52da78191d6ef68c62ae2845709880d6a38ab1c",
+    "baseline_sha256": "a5f61535adf8b5e9b95d6819d52da78191d6ef68c62ae2845709880d6a38ab1c",
+    "identical_archive": true,
+    "etag": "\"f71b4-5f9c28b3e4c78\"",
+    "last_modified": "Thu, 20 Apr 2023 11:07:18 GMT"
+  },
+  {
+    "year": 2009,
+    "url": "https://www1.finanze.gov.it/finanze/analisi_stat/public/v_4_0_0/contenuti/Redditi_e_principali_variabili_IRPEF_su_base_comunale_CSV_2009.zip",
+    "retrieved_at": "2026-11-06T16:51:45.778393+00:00",
+    "sha256": "91f2baf852098781e222eb290609d09a5bbb0e4644912e5a15fa20325137e58f",
+    "baseline_sha256": "91f2baf852098781e222eb290609d09a5bbb0e4644912e5a15fa20325137e58f",
+    "identical_archive": true,
+    "etag": "\"f8b2f-5f9c28b3e67d0\"",
+    "last_modified": "Thu, 20 Apr 2023 11:07:18 GMT"
+  },
+  {
+    "year": 2010,
+    "url": "https://www1.finanze.gov.it/finanze/analisi_stat/public/v_4_0_0/contenuti/Redditi_e_principali_variabili_IRPEF_su_base_comunale_CSV_2010.zip",
+    "retrieved_at": "2026-11-06T16:51:47.186208+00:00",
+    "sha256": "97c0d5f368b2dfcf0b8897b1b63a5626deb4cf0db8a75b3b69dfed2bf7acfcc3",
+    "baseline_sha256": "97c0d5f368b2dfcf0b8897b1b63a5626deb4cf0db8a75b3b69dfed2bf7acfcc3",
+    "identical_archive": true,
+    "etag": "\"f8935-5f9c28b3e8328\"",
+    "last_modified": "Thu, 20 Apr 2023 11:07:18 GMT"
+  },
+  {
+    "year": 2011,
+    "url": "https://www1.finanze.gov.it/finanze/analisi_stat/public/v_4_0_0/contenuti/Redditi_e_principali_variabili_IRPEF_su_base_comunale_CSV_2011.zip",
+    "retrieved_at": "2026-11-06T16:51:48.640977+00:00",
+    "sha256": "293c126136736babcc59c02e6643217ed3f66a4a449e02dca899cb7f85d3173f",
+    "baseline_sha256": "293c126136736babcc59c02e6643217ed3f66a4a449e02dca899cb7f85d3173f",
+    "identical_archive": true,
+    "etag": "\"f8fe8-5f9c28b3e8ee0\"",
+    "last_modified": "Thu, 20 Apr 2023 11:07:18 GMT"
+  },
+  {
+    "year": 2012,
+    "url": "https://www1.finanze.gov.it/finanze/analisi_stat/public/v_4_0_0/contenuti/Redditi_e_principali_variabili_IRPEF_su_base_comunale_CSV_2012.zip",
+    "retrieved_at": "2026-11-06T16:51:50.072472+00:00",
+    "sha256": "85543c6acf8dbf3c1b4afee7e8b8bdfd46b9cb7fef81bf488df13e127f2fedb9",
+    "baseline_sha256": "85543c6acf8dbf3c1b4afee7e8b8bdfd46b9cb7fef81bf488df13e127f2fedb9",
+    "identical_archive": true,
+    "etag": "\"ee055-5f9c28b3e9e80\"",
+    "last_modified": "Thu, 20 Apr 2023 11:07:18 GMT"
+  },
+  {
+    "year": 2013,
+    "url": "https://www1.finanze.gov.it/finanze/analisi_stat/public/v_4_0_0/contenuti/Redditi_e_principali_variabili_IRPEF_su_base_comunale_CSV_2013.zip",
+    "retrieved_at": "2026-11-06T16:51:51.542404+00:00",
+    "sha256": "a748ae1e826a90152bef74e76815805b702910cb4bd02a53e2bf8b8d7f1d8e91",
+    "baseline_sha256": "a748ae1e826a90152bef74e76815805b702910cb4bd02a53e2bf8b8d7f1d8e91",
+    "identical_archive": true,
+    "etag": "\"f7035-6361d92454839\"",
+    "last_modified": "Tue, 27 May 2025 12:54:56 GMT"
+  },
+  {
+    "year": 2014,
+    "url": "https://www1.finanze.gov.it/finanze/analisi_stat/public/v_4_0_0/contenuti/Redditi_e_principali_variabili_IRPEF_su_base_comunale_CSV_2014.zip",
+    "retrieved_at": "2026-11-06T16:51:52.954199+00:00",
+    "sha256": "7bcec821fe953414f78dfcf0f4b9a4311a27ac5b3150af6be372ce9eef964198",
+    "baseline_sha256": "7bcec821fe953414f78dfcf0f4b9a4311a27ac5b3150af6be372ce9eef964198",
+    "identical_archive": true,
+    "etag": "\"f64de-6361d924557d9\"",
+    "last_modified": "Tue, 27 May 2025 12:54:56 GMT"
+  },
+  {
+    "year": 2015,
+    "url": "https://www1.finanze.gov.it/finanze/analisi_stat/public/v_4_0_0/contenuti/Redditi_e_principali_variabili_IRPEF_su_base_comunale_CSV_2015.zip",
+    "retrieved_at": "2026-11-06T16:51:54.436153+00:00",
+    "sha256": "01f2192617bf517848d8a4e897d381b0a487ed2ee8bda3dca41e65310edab793",
+    "baseline_sha256": "01f2192617bf517848d8a4e897d381b0a487ed2ee8bda3dca41e65310edab793",
+    "identical_archive": true,
+    "etag": "\"ff94d-6361d92456b61\"",
+    "last_modified": "Tue, 27 May 2025 12:54:56 GMT"
+  },
+  {
+    "year": 2016,
+    "url": "https://www1.finanze.gov.it/finanze/analisi_stat/public/v_4_0_0/contenuti/Redditi_e_principali_variabili_IRPEF_su_base_comunale_CSV_2016.zip",
+    "retrieved_at": "2026-11-06T16:51:55.912134+00:00",
+    "sha256": "13677af1664bf1f2d01b77663e50560601ffbe6127f06c47a47c618fbe911d2c",
+    "baseline_sha256": "13677af1664bf1f2d01b77663e50560601ffbe6127f06c47a47c618fbe911d2c",
+    "identical_archive": true,
+    "etag": "\"feb0d-6361d92457719\"",
+    "last_modified": "Tue, 27 May 2025 12:54:56 GMT"
+  },
+  {
+    "year": 2017,
+    "url": "https://www1.finanze.gov.it/finanze/analisi_stat/public/v_4_0_0/contenuti/Redditi_e_principali_variabili_IRPEF_su_base_comunale_CSV_2017.zip",
+    "retrieved_at": "2026-11-06T16:51:57.395666+00:00",
+    "sha256": "85c88263d73fd80537bd22406866bd4ebcfc778db1ba12cbea048fa1f30961c2",
+    "baseline_sha256": "85c88263d73fd80537bd22406866bd4ebcfc778db1ba12cbea048fa1f30961c2",
+    "identical_archive": true,
+    "etag": "\"1008b6-6361d924582d1\"",
+    "last_modified": "Tue, 27 May 2025 12:54:56 GMT"
+  },
+  {
+    "year": 2018,
+    "url": "https://www1.finanze.gov.it/finanze/analisi_stat/public/v_4_0_0/contenuti/Redditi_e_principali_variabili_IRPEF_su_base_comunale_CSV_2018.zip",
+    "retrieved_at": "2026-11-06T16:51:58.773794+00:00",
+    "sha256": "930dd99935e84898370031755d390ef91d8aeb59bf8402fe6f6f6249939b02d7",
+    "baseline_sha256": "930dd99935e84898370031755d390ef91d8aeb59bf8402fe6f6f6249939b02d7",
+    "identical_archive": true,
+    "etag": "\"f934f-6361d92458e89\"",
+    "last_modified": "Tue, 27 May 2025 12:54:56 GMT"
+  },
+  {
+    "year": 2019,
+    "url": "https://www1.finanze.gov.it/finanze/analisi_stat/public/v_4_0_0/contenuti/Redditi_e_principali_variabili_IRPEF_su_base_comunale_CSV_2019.zip",
+    "retrieved_at": "2026-11-06T16:52:00.265699+00:00",
+    "sha256": "2f085f4882d1a6816f821082c7c3c2a7948712387fc2cfc52aab9e96b094ef6e",
+    "baseline_sha256": "2f085f4882d1a6816f821082c7c3c2a7948712387fc2cfc52aab9e96b094ef6e",
+    "identical_archive": true,
+    "etag": "\"f83c4-6361d92459e29\"",
+    "last_modified": "Tue, 27 May 2025 12:54:56 GMT"
+  },
+  {
+    "year": 2020,
+    "url": "https://www1.finanze.gov.it/finanze/analisi_stat/public/v_4_0_0/contenuti/Redditi_e_principali_variabili_IRPEF_su_base_comunale_CSV_2020.zip",
+    "retrieved_at": "2026-11-06T16:52:01.731311+00:00",
+    "sha256": "5245fdcb8ca376624cb47b72f9315eddaa5cc0a61d9cb942984fe5039bd37048",
+    "baseline_sha256": "5245fdcb8ca376624cb47b72f9315eddaa5cc0a61d9cb942984fe5039bd37048",
+    "identical_archive": true,
+    "etag": "\"f7a12-6361d9245adc9\"",
+    "last_modified": "Tue, 27 May 2025 12:54:56 GMT"
+  },
+  {
+    "year": 2021,
+    "url": "https://www1.finanze.gov.it/finanze/analisi_stat/public/v_4_0_0/contenuti/Redditi_e_principali_variabili_IRPEF_su_base_comunale_CSV_2021.zip",
+    "retrieved_at": "2026-11-06T16:52:03.186550+00:00",
+    "sha256": "8f8eb4bafcbefac72e8b28391df8a9e674a9a984d0ea5ec082551ab26eaf89fd",
+    "baseline_sha256": "8f8eb4bafcbefac72e8b28391df8a9e674a9a984d0ea5ec082551ab26eaf89fd",
+    "identical_archive": true,
+    "etag": "\"f969b-6361d9245b981\"",
+    "last_modified": "Tue, 27 May 2025 12:54:56 GMT"
+  },
+  {
+    "year": 2022,
+    "url": "https://www1.finanze.gov.it/finanze/analisi_stat/public/v_4_0_0/contenuti/Redditi_e_principali_variabili_IRPEF_su_base_comunale_CSV_2022.zip",
+    "retrieved_at": "2026-11-06T16:52:04.650814+00:00",
+    "sha256": "3738646fa64bf8383ff8a5cd36102f1577e0b93bf10fc073498e82b361987fc6",
+    "baseline_sha256": "3738646fa64bf8383ff8a5cd36102f1577e0b93bf10fc073498e82b361987fc6",
+    "identical_archive": true,
+    "etag": "\"f9a3f-6361d9245cd09\"",
+    "last_modified": "Tue, 27 May 2025 12:54:56 GMT"
+  },
+  {
+    "year": 2023,
+    "url": "https://www1.finanze.gov.it/finanze/analisi_stat/public/v_4_0_0/contenuti/Redditi_e_principali_variabili_IRPEF_su_base_comunale_CSV_2023.zip",
+    "retrieved_at": "2026-11-06T16:52:06.053259+00:00",
+    "sha256": "2d8fafc10c728fcc132ee9f0f0a123d77b889093419f427163bc629bdb70b060",
+    "baseline_sha256": "2d8fafc10c728fcc132ee9f0f0a123d77b889093419f427163bc629bdb70b060",
+    "identical_archive": true,
+    "etag": "\"1041c8-6361d9245dcaa\"",
+    "last_modified": "Tue, 27 May 2025 12:54:56 GMT"
+  },
+  {
+    "year": 2024,
+    "url": "https://www1.finanze.gov.it/finanze/analisi_stat/public/v_4_0_0/contenuti/Redditi_e_principali_variabili_IRPEF_su_base_comunale_CSV_2024.zip",
+    "retrieved_at": "2026-11-06T16:52:07.563913+00:00",
+    "sha256": "75cecc95d72b76cda545666154e95ab414df1983f8a0eeef72915862ef4e8cb7",
+    "baseline_sha256": "75cecc95d72b76cda545666154e95ab414df1983f8a0eeef72915862ef4e8cb7",
+    "identical_archive": true,
+    "etag": "\"fb23c-65021cb5a584e\"",
+    "last_modified": "Thu, 23 Apr 2026 14:52:16 GMT"
+  }
+]
