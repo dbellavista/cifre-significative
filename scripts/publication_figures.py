@@ -525,8 +525,9 @@ def cover02(size: pd.DataFrame) -> None:
 
 S03_PMR = 2018  # PMR wave matched to the growth window of the test; the professions' and retail indicators are identical in 2023
 POS03_IT = {"ACCOUNTANTS": "Commercialisti", "ARCHITECTS": "Architetti", "SERVBARRIER": "Barriere nei servizi", "RETAIL_TRADE": "Commercio al dettaglio", "ENGINEERS": "Ingegneri", "LAWYERS": "Avvocati",
-            "ECOMM": "Telecomunicazioni", "ENERGY": "Energia", "TRANSPORT": "Trasporti", "NETWORK_SECTORS": "Settori a rete (media)"}
-SEC03_IT = {"D": "Elettricità e gas", "G47": "Commercio al dettaglio", "H49": "Trasporto terrestre", "J61": "Telecomunicazioni", "M69_M70": "Servizi legali e contabili", "M71": "Architettura e ingegneria"}
+            "ECOMM": "Telecomunicazioni", "ENERGY": "Energia", "TRANSPORT": "Trasporti", "NETWORK_SECTORS": "Settori a rete (media)", "PUBLIC_PROCUREMENT": "Appalti pubblici"}
+SEC03_IT = {"D": "Elettricità e gas", "G47": "Commercio al dettaglio", "H49": "Trasporto terrestre", "J61": "Telecomunicazioni", "M69_M70": "Servizi legali e contabili", "M71": "Architettura e ingegneria", "H50": "Trasporto per vie d'acqua", "H51": "Trasporto aereo"}
+N_IT = {6: "sei", 7: "sette", 8: "otto"}
 
 
 def fig03_position(pmr: pd.DataFrame) -> None:
@@ -537,33 +538,33 @@ def fig03_position(pmr: pd.DataFrame) -> None:
     ax.barh(y, pos.italy, color=ITALY_C, height=0.6); ax.scatter(pos.median_others, y, marker="D", s=62, color=EU_C, zorder=3, edgecolor=SURFACE)
     for i, (m, r) in enumerate(pos.iterrows()): ax.text(6.6, i, f"{r.italy:.1f} / {r.median_others:.1f}  ({int(r['rank'])}°)", va="center", ha="right", fontsize=10.5, color=INK)
     ax.set_yticks(y, [POS03_IT[m] for m in pos.index]); ax.set_xlim(0, 6.7); ax.set_xticks([0, 2, 4]); ax.grid(axis="y", visible=False); ax.set_xlabel("Indicatore OCSE (0-6, più alto = più restrittivo)", fontsize=11); _top_axis(ax, "Indicatore OCSE (0-6)")
-    ax.set_title(f"Regolazione dei mercati, {S03_PMR}\nItalia (barra), mediana degli altri (rombo), posizione", loc="left", fontsize=12, pad=12); fig.tight_layout(); save(fig, "03_posizione")
+    fig.suptitle(f"Regolamentazione dei mercati, {S03_PMR}\nItalia (barra), mediana degli altri (rombo)", x=0.02, ha="left", fontsize=12, fontweight="bold"); fig.tight_layout(); save(fig, "03_posizione")
 
 
 def fig03_scatter(d: pd.DataFrame, res: pd.DataFrame) -> None:
-    """The 123 country x sector pairs: within-sector rank of the regulation against the within-sector rank of productivity growth."""
+    """The country x sector pairs: within-sector rank of the regulation against the within-sector rank of productivity growth."""
     pooled = res[res.sector == "pooled"].iloc[0]; print(f"03 scatter: n {len(d)}, rho {pooled.rho:+.3f}, p {pooled.p:.3f}")
     fig, ax = plt.subplots(figsize=(5.4, 5.0)); o = d[d.iso3 != ITALY]; it = d[d.iso3 == ITALY]
     ax.scatter(o.rr, o.rg, s=26, color="#c9ced6", zorder=2); ax.scatter(it.rr, it.rg, s=90, color=ITALY_C, zorder=3, edgecolor=SURFACE)
-    ax.axhline(0, color=INK2, lw=0.8); ax.axvline(0, color=INK2, lw=0.8); ax.set_xlabel("Regolazione del settore (← meno restrittivo, più restrittivo →)", fontsize=10.5); ax.set_ylabel("Crescita della produttività\n(← più lenta, più rapida →)", fontsize=10.5)
+    ax.axhline(0, color=INK2, lw=0.8); ax.axvline(0, color=INK2, lw=0.8); ax.set_xlabel("Regolamentazione del settore (← meno restrittivo, più restrittivo →)", fontsize=10.5); ax.set_ylabel("Crescita della produttività\n(← più lenta, più rapida →)", fontsize=10.5)
     ax.set_xticks([]); ax.set_yticks([]); ax.text(0.03, 0.97, f"Correlazione {pooled.rho:+.2f}".replace("-", "−"), transform=ax.transAxes, va="top", fontsize=12, fontweight="bold", color=INK); ax.text(0.03, 0.89, "Punti blu: Italia", transform=ax.transAxes, va="top", fontsize=11, color=ITALY_C, fontweight="bold")
-    ax.set_title(f"{len(d)} coppie paese-settore, sei settori\nposizione dentro ogni settore", loc="left", fontsize=12.5); fig.tight_layout(); save(fig, "03_legame")
+    ax.set_title(f"{len(d)} coppie paese-settore, {N_IT[d.nace_r2.nunique()]} settori\nposizione dentro ogni settore", loc="left", fontsize=12.5); fig.tight_layout(); save(fig, "03_legame")
 
 
 def fig03_italy(it: pd.DataFrame) -> None:
     """Italy's productivity growth per year against the median of the others, sector by sector, ordered by Italy's regulation rank."""
     it = it.assign(lab=it.nace_r2.map(SEC03_IT)).sort_values("reg_rank"); print("03 italy:\n", it.round(2).to_string())
-    fig, ax = plt.subplots(figsize=(5.4, 4.6)); y = np.arange(len(it))[::-1]
+    fig, ax = plt.subplots(figsize=(5.4, 4.0 + 0.1 * len(it))); y = np.arange(len(it))[::-1]
     ax.axvline(0, color=INK, lw=1.0); ax.scatter(it.growth_median_others_pct, y, marker="D", s=70, color=EU_C, zorder=3, edgecolor=SURFACE); ax.scatter(it.growth_italy_pct, y, s=90, color=ITALY_C, zorder=4, edgecolor=SURFACE)
     for yy, (_, r) in zip(y, it.iterrows(), strict=True): ax.plot([r.growth_median_others_pct, r.growth_italy_pct], [yy, yy], color="#c9ced6", lw=2.4, zorder=1); ax.text(4.9, float(yy), f"{r.growth_italy_pct:+.1f} / {r.growth_median_others_pct:+.1f}".replace("-", "−"), va="center", ha="left", fontsize=10.5, color=INK)
-    ax.set_yticks(y, [f"{r.lab} ({int(r.reg_rank)}° su {int(r.n)})" for _, r in it.iterrows()]); ax.set_xlim(-2.6, 9.2); ax.set_xticks([-2, 0, 2, 4]); ax.grid(axis="y", visible=False); ax.set_xlabel("Crescita della produttività oraria (% l'anno)", fontsize=11); _top_axis(ax, "% l'anno")
+    ax.set_yticks(y, [f"{r.lab} ({int(r.reg_rank)}° su {int(r.n)})" for _, r in it.iterrows()]); lo = min(-2.6, np.floor(it.growth_italy_pct.min()) - 0.6); ax.set_xlim(lo, 9.2); ax.set_xticks(np.arange(np.ceil(lo / 2) * 2, 5, 2)); ax.grid(axis="y", visible=False); ax.set_xlabel("Crescita della produttività oraria (% l'anno)", fontsize=11); _top_axis(ax, "% l'anno")
     fig.suptitle("Dal 2005-07 al 2017-19, per settore\nItalia (cerchio), mediana degli altri (rombo)", x=0.02, ha="left", fontsize=12, fontweight="bold"); fig.tight_layout(); save(fig, "03_italia_settori")
 
 
 def cover03(pmr: pd.DataFrame) -> None:
     """Share/preview image 1200x630: the accountants' regulation index, Italy and the median of the others."""
     p = RGL.position(pmr, measures=["ACCOUNTANTS"], years=(S03_PMR,)).iloc[0]; print(f"03 cover: Italy {p.italy:.2f}, median {p.median_others:.2f}, rank {p['rank']:.0f}")
-    _cover("03", "La regolazione dei mercati", f"Indice OCSE per i commercialisti, {S03_PMR} (0-6)", [("Italia", p.italy, ITALY_C), ("Mediana UE", p.median_others, EU_C)], lambda v: f"{v:.1f}", p.italy)
+    _cover("03", "La regolamentazione dei mercati", f"Indice OCSE per i commercialisti, {S03_PMR} (0-6)", [("Italia", p.italy, ITALY_C), ("Mediana UE", p.median_others, EU_C)], lambda v: f"{v:.1f}", p.italy)
 
 
 if __name__ == "__main__":

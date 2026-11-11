@@ -18,7 +18,7 @@ from .common import OUT
 
 def run_regulation_all(out: Path = OUT, n_perm: int = 20000, n_rep: int = 200) -> dict[str, pd.DataFrame]:
     """G1-G6: Italy's position in the OECD PMR and EPL, and the sector test (regulation of the sector in 2018 against productivity growth of the sector, 2005-07 to 2017-19 as the primary specification,
-    robustness: early and late windows, PMR 2023). BH over the primary family (pooled + 6 sectors) only; the robustness rows are descriptive."""
+    robustness: early and late windows, PMR 2023). BH over the primary family (pooled + the sectors with MIN_COUNTRIES countries) only; the robustness rows are descriptive."""
     pmr, epl = OR.load_pmr(), OR.load_epl()
     s = load_sectors64()
     rows, primary = [], None

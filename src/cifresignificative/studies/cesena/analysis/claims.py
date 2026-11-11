@@ -19,6 +19,7 @@ from cifresignificative.studies.cesena.analysis.investments import (
 )
 
 PROCESSED_DIR = Path("data/processed/cesena")
+REVIEW_GROWTH = Path("studies/cesena/reports/income_evidence/review_growth.csv")
 CORE = [c for c in CORE_PEER_IDS if c != CESENA]
 
 
@@ -95,6 +96,18 @@ def _fiscal(c: _Claims, p: Path) -> None:
     c.add("rigidity_1618", r["cesena_mean"], share(r["cesena_mean"]), "01", "2016-2018", src, int(r["rank_1_to_n"]), int(r["n_comuni"]))
     c.add("rigidity_1618_peer", r["peer_median"], share(r["peer_median"]), "01", "2016-2018", src)
 
+    # Waste booking: a city that keeps the waste tax in its budget also carries the waste service in current spending. The accounts itemise the tax in 2016-2018 only.
+    early = fiscal[(fiscal["regime"] == "dlgs118") & (fiscal["budget_type"] == "consuntivo") & fiscal["year"].between(2016, 2018)]
+    for col, tag in (("spese_correnti_comp_real_pc", "current"), ("imposte_tasse_comp_real_pc", "taxes")):
+        net = (early[col] - early["tari_tarsu_comp_real_pc"]).groupby(early["comune_id"]).mean()
+        rk, n = _rank(net)
+        c.add(f"{tag}_x_1618", net[CESENA], eur(net[CESENA], 0), "01", "2016-2018, without the waste tax", src, rk, n)
+        c.add(f"{tag}_x_1618_peer", net[CORE].median(), eur(net[CORE].median(), 0), "01", "2016-2018, without the waste tax", src)
+    rig = early.pivot(index="comune_id", columns="year", values="rigidity_official_pct")
+    c.add("rigidity_faenza_2016", rig.loc["039010", 2016], share(rig.loc["039010", 2016]), "01", "2016, Faenza, as in the source", src)
+    rk, n = _rank(rig.drop(index="039010").mean(axis=1))
+    c.add("rigidity_1618_x_faenza", rig.loc[CESENA].mean(), share(rig.loc[CESENA].mean()), "01", "2016-2018, Faenza left out", src, rk, n)
+
     m = mission_allocation_summary(missions, demo, core_only=True).set_index("mission_code")
     for code in ("M12", "M03", "M05"):
         c.add(f"{code.lower()}_current", m.loc[code, "cesena_correnti_real_pc"], eur(m.loc[code, "cesena_correnti_real_pc"], 0), "01", "2016-2021", "missions.parquet")
@@ -145,6 +158,24 @@ def _fiscal(c: _Claims, p: Path) -> None:
     y24 = cp[cp["year"] == 2024]
     low = int(((y24["tari_tarsu_cassa_eur"] / y24["entrate_correnti_cassa_eur"]) < 1 / 30).sum())
     c.add("tari_low_n", low, f"{low} of {len(y24)}", "01", "2024", src)
+    # Consolidated current spending net of waste-tax cash receipts (a proxy for the cost of the waste service kept in the budget)
+    sc24 = sc[sc["year"] == 2024].set_index("comune_id")
+    tari_pc = y24.set_index("comune_id")["tari_tarsu_cassa_eur"] / sc24["pop_total"]
+    net = sc24["consolidated_correnti_pc"] - tari_pc
+    note = "2024, cash, net of waste-tax receipts"
+    rk, n = _rank(net)
+    c.add("consolidated_current_x_2024", net[CESENA], eur(net[CESENA], 0), "01", note, src, rk, n)
+    for tag, med in (("core", net[CORE].median()), ("all", net.drop(index=CESENA).median())):
+        c.add(f"consolidated_current_x_2024_{tag}", med, eur(med, 0), "01", note, src)
+        c.add(f"consolidated_current_x_2024_{tag}_gap", (net[CESENA] / med - 1) * 100, pct((net[CESENA] / med - 1) * 100, 1), "01", note, src)
+    booked = tari_pc.drop(index=CESENA)
+    booked = booked[booked > 100]  # peers that still collect the waste tax through the budget
+    c.add("tari_peers_booked_n", len(booked), f"{len(booked)} of {len(tari_pc) - 1}", "01", "2024, waste tax above 100 euro per resident", src)
+    c.add("tari_peers_booked_lo", booked.min(), eur(booked.min(), 0), "01", "2024, per resident", src)
+    c.add("tari_peers_booked_hi", booked.max(), eur(booked.max(), 0), "01", "2024, per resident", src)
+    cur = cp[cp["comune_id"] == CESENA].set_index("year")["spese_correnti_cassa_eur"]
+    for y in (2022, 2023):
+        c.add(f"current_cash_{y}", cur[y], meur(cur[y], 1), "01", f"{y}, cash current spending, Comune alone", src)
     # Cesena accruals from the Rendiconto CSVs against the cash proxy for the same years (one city, anchor only)
     ra = p / "rendiconto_accrual.parquet"
     if ra.exists():
@@ -232,7 +263,7 @@ def _fiscal(c: _Claims, p: Path) -> None:
         r3 = ret.loc[2026:2028]
         c.add("retirements_2026_2028", r3["retirements"].sum(), f"{r3['retirements'].sum():.0f}", "01", "2026-2028 forecast retirements (September 2025 DUP)", "fabbisogni_retirements.parquet")
         c.add("retirements_saving_2026_2028", r3["saving_eur"].sum(), meur(r3["saving_eur"].sum(), 2), "01", "2026-2028 forecast saving from retirements", "fabbisogni_retirements.parquet")
-    # Consolidated accounts of the Comune group (old transparency site): 2018, 2020 (prior-year column of the 2021 report) and 2021; 2019 is a scan, not parsed
+    # Consolidated accounts of the Comune group (old transparency site): 2018, 2020 (prior-year column of the 2021 report) and 2021; 2019 is a scan read by OCR
     cs, cper = p / "consolidated_statements.parquet", p / "consolidated_perimeter.parquet"
     if cs.exists() and cper.exists():
         st = pd.read_parquet(cs).set_index(["year", "item"])
@@ -329,6 +360,12 @@ def _investments(c: _Claims, p: Path) -> None:
     ces = j[j["comune_id"] == CESENA]
     top3 = ces["allocated_eur"].nlargest(3).sum() / ces["allocated_eur"].sum() * 100
     c.add("oc2127_top3", top3, share(top3, 0), "02", "2021-2027", src)
+    for k, v in enumerate(ces["allocated_eur"].nlargest(4), 1):
+        c.add(f"oc2127_top{k}_eur", v, meur(v), "02", f"2021-2027, project number {k} by amount", src)
+    for tag, d, cycle in (("oc1420", pj, "2014-2020"), ("oc2127", j, "2021-2027")):  # located in Cesena is not run by the Comune
+        loc = d[d["comune_id"] == CESENA]
+        own = loc.loc[loc["is_comune_actor"].astype(bool), "allocated_eur"].sum() / loc["allocated_eur"].sum() * 100
+        c.add(f"{tag}_comune_share", own, share(own), "02", f"{cycle}, amount with a Comune as implementing body or beneficiary (name match)", f"projects{'_2021_2027' if tag == 'oc2127' else ''}.parquet")
     disb = ces["disbursed_eur"].sum() / ces["allocated_eur"].sum() * 100
     c.add("oc2127_disb", disb, share(disb, 0), "02", "2021-2027", src)
 
@@ -357,6 +394,10 @@ def _economy(c: _Claims, p: Path) -> None:
         d = s[2024] - s[2012]
         c.add(f"{name}_jobs", d, signed(d, 0), "03", "2012-2024", src)
         c.add(f"{name}_jobs_share", d / net * 100, share(d / net * 100, 0), "03", "2012-2024", src)
+    ag78, cl81 = ces[ces["ateco_2d"] == "78"].set_index("year")["employees"], ces[ces["ateco_2d"] == "81"].set_index("year")["employees"]
+    c.add("agency_jobs_2023", ag78[2023] - ag78[2012], signed(ag78[2023] - ag78[2012], 0), "03", "2012-2023", src)
+    c.add("agency_change_2024", ag78[2024] - ag78[2023], signed(ag78[2024] - ag78[2023], 0), "03", "2023-2024", src)
+    c.add("cleaning_change_2024", cl81[2024] - cl81[2023], signed(cl81[2024] - cl81[2023], 0), "03", "2023-2024", src)
     an = pd.read_parquet(p / "asia_anomalies.parquet")
     c.add("anomalies_n", len(an), f"{len(an)}", "03", "2013-2024", "asia_anomalies.parquet")
 
@@ -446,6 +487,11 @@ def _outcomes(c: _Claims, p: Path) -> None:
         window = f"{r['t0']}-{r['t1']}"
         c.add(cid, float(r["cesena"]), pct(float(r["cesena"])), "04", window, src, int(r["rank"]), int(r["n"]))
         c.add(f"{cid}_peer", float(r["peer_median"]), pct(float(r["peer_median"])), "04", window, src)
+
+    if REVIEW_GROWTH.exists():  # direct annual HICP index levels instead of the chained annual rates
+        rg = pd.read_csv(REVIEW_GROWTH, dtype={"comune_id": str})
+        r = rg[(rg["measure"] == "mean_real_direct_hicp_eur") & (rg["comune_id"] == CESENA) & (rg["start"] == 2008) & (rg["end"] == 2024)].iloc[0]
+        c.add("income_mean_0824_direct", r["growth_pct"], pct(r["growth_pct"]), "04", "2008-2024, direct annual HICP index", "reports/income_evidence/review_growth.csv", int(r["rank"]), int(r["cities"]))
 
     co = pd.read_parquet(p / "cohort_by_period.parquet")
     for r in co.to_dict("records"):
@@ -583,6 +629,12 @@ def _evaluation(c: _Claims, p: Path) -> None:
     c.add("sc_mean_no_ferrara", v, pp(v), "05", "2024", "synthetic_leave_one_out.parquet")
     w = lo[(lo["metric"] == "mean_income_real_eur") & (lo["dropped"] == "Ferrara")]["weight_dropped"].iloc[0]
     c.add("sc_mean_ferrara_weight", w * 100, share(w * 100, 0), "05", "2008-2018 fit", "synthetic_leave_one_out.parquet")
+
+    med = lo[lo["metric"] == "median_income_real_eur"].set_index("dropped")
+    c.add("sc_median_faenza_weight", med.loc["Faenza", "weight_dropped"] * 100, share(med.loc["Faenza", "weight_dropped"] * 100, 0), "05", "2008-2018 fit", "synthetic_leave_one_out.parquet")
+    c.add("sc_median_no_faenza", med.loc["Faenza", "gap_end_pp"], pp(med.loc["Faenza", "gap_end_pp"]), "05", "2024", "synthetic_leave_one_out.parquet")
+    c.add("sc_median_no_faenza_prefit", med.loc["Faenza", "pre_rmse_pp"], f"{med.loc['Faenza', 'pre_rmse_pp']:.1f} pp", "05", "2008-2018 fit error without Faenza", "synthetic_leave_one_out.parquet")
+    c.add("sc_median_prefit", med.loc["none", "pre_rmse_pp"], f"{med.loc['none', 'pre_rmse_pp']:.1f} pp", "05", "2008-2018 fit error", "synthetic_leave_one_out.parquet")
 
     lf = pd.read_parquet(p / "lagged_fe_results.parquet")
     n = int(lf["p_perm"].notna().sum())

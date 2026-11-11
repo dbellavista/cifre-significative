@@ -83,9 +83,14 @@ def test_sector_table_covers_italy():
     assert it.nace_r2.nunique() == 10 and it[["gva_clv20_meur", "hours_ths"]].notna().all().all()
 
 
-def test_excluded_earnings_points_are_dropped(panel):
-    for ind in ("net_earnings_pps", "gross_earnings_pps"):
-        assert not ((panel.indicator == ind) & (panel.year == 2024)).any()
+def test_earnings_break_year_is_flagged_and_on_the_annual_scale(panel):
+    """2024 starts a new basis of the average wage (catalog.SERIES_BREAKS): the point is kept, flagged, and annual (it was published monthly until November 2026)."""
+    from cifresignificative.core.catalog import EXCLUDED_POINTS, SERIES_BREAKS
+    for (ind, year) in EXCLUDED_POINTS:
+        assert not ((panel.indicator == ind) & (panel.year == year)).any()
+    for ind, year in SERIES_BREAKS.items():
+        d = panel[(panel.indicator == ind) & (panel.iso3 == "ITA")].set_index("year")
+        assert "b" in str(d.flag[year]) and 0.8 < d.value[year] / d.value[year - 1] < 1.25
 
 
 def test_women_managers_share_is_a_percentage(panel):

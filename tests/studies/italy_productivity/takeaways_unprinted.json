@@ -1,0 +1,129 @@
+{
+ "02": {
+  "+26.5": "value of an earlier data vintage, kept for the record"
+ },
+ "08": {
+  "+21.9": "value of an earlier data vintage, kept for the record",
+  "+17.6": "value of an earlier data vintage, kept for the record"
+ },
+ "09": {
+  "19.7": "quoted from the source document, not computed here",
+  "17.0": "quoted from the source document, not computed here",
+  "38.3": "quoted from the source document, not computed here",
+  "11.7": "quoted from the source document, not computed here",
+  "59.8": "quoted from the source document, not computed here",
+  "60.2": "quoted from the source document, not computed here",
+  "18.4": "quoted from the source document, not computed here",
+  "23.4": "quoted from the source document, not computed here",
+  "10.8": "from an earlier run, not recomputed in this review",
+  "79.2": "read from the processed table, recomputed 2026-11-11 (the cell plots it without printing)",
+  "90.0": "read from the processed table, recomputed 2026-11-11 (the cell plots it without printing)",
+  "95.3": "read from the processed table, recomputed 2026-11-11 (the cell plots it without printing)",
+  "10.1": "read from the processed table, recomputed 2026-11-11 (the cell plots it without printing)",
+  "9.0": "read from the processed table, recomputed 2026-11-11 (the cell plots it without printing)",
+  "32.4": "read from the processed table, recomputed 2026-11-11 (the cell plots it without printing)",
+  "18.8": "read from the processed table, recomputed 2026-11-11 (the cell plots it without printing)",
+  "16.5": "read from the processed table, recomputed 2026-11-11 (the cell plots it without printing)",
+  "5.6": "read from the processed table, recomputed 2026-11-11 (the cell plots it without printing)",
+  "30.0": "read from the processed table, recomputed 2026-11-11 (the cell plots it without printing)",
+  "110.6": "read from the processed table, recomputed 2026-11-11 (the cell plots it without printing)"
+ },
+ "10": {
+  "+4.6": "difference or sum of printed figures, recomputed 2026-11-11",
+  "2.4": "read from the processed table, recomputed 2026-11-11 (the cell plots it without printing)",
+  "3.3": "read from the processed table, recomputed 2026-11-11 (the cell plots it without printing)",
+  "4.4": "read from the processed table, recomputed 2026-11-11 (the cell plots it without printing)",
+  "5.0": "read from the processed table, recomputed 2026-11-11 (the cell plots it without printing)",
+  "5.9": "read from the processed table, recomputed 2026-11-11 (the cell plots it without printing)"
+ },
+ "12": {
+  "13.5": "difference or sum of printed figures, recomputed 2026-11-11",
+  "22.5": "read from the processed table, recomputed 2026-11-11 (the cell plots it without printing)"
+ },
+ "13": {
+  "11.6": "from an earlier run, not recomputed in this review",
+  "4.2": "value of an earlier data vintage, kept for the record",
+  "15.8": "value of an earlier data vintage, kept for the record"
+ },
+ "22": {
+  "31.4": "read from the processed table, recomputed 2026-11-11 (the cell plots it without printing)",
+  "36.5": "read from the processed table, recomputed 2026-11-11 (the cell plots it without printing)",
+  "48.2": "read from the processed table, recomputed 2026-11-11 (the cell plots it without printing)",
+  "54.3": "read from the processed table, recomputed 2026-11-11 (the cell plots it without printing)",
+  "59.0": "read from the processed table, recomputed 2026-11-11 (the cell plots it without printing)",
+  "24.4": "read from the processed table, recomputed 2026-11-11 (the cell plots it without printing)",
+  "20.9": "read from the processed table, recomputed 2026-11-11 (the cell plots it without printing)",
+  "19.3": "read from the processed table, recomputed 2026-11-11 (the cell plots it without printing)"
+ },
+ "23": {
+  "2.35": "from an earlier run, not recomputed in this review"
+ },
+ "24": {
+  "0.95": "method parameter or threshold"
+ },
+ "25": {
+  "0.79": "from an earlier run, not recomputed in this review"
+ },
+ "27": {
+  "1.32": "value of an earlier data vintage, kept for the record",
+  "1.645": "method parameter or threshold",
+  "241.6": "difference or sum of printed figures, recomputed 2026-11-11",
+  "7.8": "quoted from the source document, not computed here"
+ },
+ "28": {
+  "0.034": "from an earlier run, not recomputed in this review"
+ },
+ "29": {
+  "+8.2": "difference or sum of printed figures, recomputed 2026-11-11",
+  "+6.1": "difference or sum of printed figures, recomputed 2026-11-11",
+  "-1.1": "difference or sum of printed figures, recomputed 2026-11-11",
+  "-1.6": "difference or sum of printed figures, recomputed 2026-11-11"
+ },
+ "30": {
+  "6.3": "read from the processed table, recomputed 2026-11-11 (the cell plots it without printing)",
+  "5.1": "read from the processed table, recomputed 2026-11-11 (the cell plots it without printing)",
+  "28.1": "from an earlier run, not recomputed in this review"
+ },
+ "31": {
+  "-4.9": "from an earlier run, not recomputed in this review"
+ },
+ "32": {
+  "-10.4": "from an earlier run, not recomputed in this review",
+  "1.06": "difference or sum of printed figures, recomputed 2026-11-11"
+ },
+ "33": {
+  "3.8": "from an earlier run, not recomputed in this review"
+ },
+ "35": {
+  "3.82": "read from the processed table, recomputed 2026-11-11 (the cell plots it without printing)",
+  "2.86": "read from the processed table, recomputed 2026-11-11 (the cell plots it without printing)",
+  "3.19": "read from the processed table, recomputed 2026-11-11 (the cell plots it without printing)",
+  "2.94": "read from the processed table, recomputed 2026-11-11 (the cell plots it without printing)",
+  "2.72": "read from the processed table, recomputed 2026-11-11 (the cell plots it without printing)",
+  "+3.05": "from an earlier run, not recomputed in this review"
+ },
+ "38": {
+  "160.5": "quoted from the source document, not computed here",
+  "-11.5": "quoted from the source document, not computed here",
+  "0.365": "value of an earlier data vintage, kept for the record",
+  "13.4": "quoted from the source document, not computed here",
+  "1.81": "quoted from the source document, not computed here",
+  "5.87": "quoted from the source document, not computed here",
+  "127.5": "from an earlier run, not recomputed in this review",
+  "92.7": "from an earlier run, not recomputed in this review"
+ },
+ "39": {
+  "3.24": "from an earlier run, not recomputed in this review",
+  "2.75": "from an earlier run, not recomputed in this review",
+  "3.05": "from an earlier run, not recomputed in this review",
+  "13.2": "from an earlier run, not recomputed in this review"
+ },
+ "41": {
+  "6.3": "difference between hand-curated plan rows and the forecast, fixed in dbp_targets.csv",
+  "0.31": "from an earlier run, not recomputed in this review"
+ },
+ "42": {
+  "25.1": "from an earlier run, not recomputed in this review",
+  "22.5": "from an earlier run, not recomputed in this review"
+ }
+}

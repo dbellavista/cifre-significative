@@ -16,7 +16,8 @@ from cifresignificative.studies.italy_productivity.analysis.data import (
 )
 
 SECTORS = {"G47": ("retail", ["RETAIL_TRADE"]), "M69_M70": ("legal and accounting", ["LAWYERS", "ACCOUNTANTS"]), "M71": ("architecture and engineering", ["ARCHITECTS", "ENGINEERS"]),
-           "H49": ("land transport", ["RAIL", "ROAD"]), "J61": ("telecommunications", ["ECOMM"]), "D": ("electricity and gas", ["ENERGY"])}  # sectors64 code -> (label, PMR sector indicators averaged)
+           "H49": ("land transport", ["RAIL", "ROAD"]), "J61": ("telecommunications", ["ECOMM"]), "D": ("electricity and gas", ["ENERGY"]),
+           "H50": ("water transport", ["WATER"]), "H51": ("air transport", ["AIR"])}  # sectors64 code -> (label, PMR sector indicators averaged); PMR WATER is water transport; H51 has 13 countries with growth and drops out at MIN_COUNTRIES
 OVERALL = ["PMR", "STATE_INVOL", "INVOL_BUSINESS", "BARRIER_ENTRY", "NETWORK_SECTORS", "SERVBARRIER", "PUBLIC_PROCUREMENT", "ADBURDEN"]
 POSITION = [*OVERALL, "LAWYERS", "ACCOUNTANTS", "ARCHITECTS", "ENGINEERS", "NOTARIES", "RETAIL_TRADE", "ENERGY", "TRANSPORT", "ECOMM"]
 MIN_COUNTRIES = 15  # a sector enters the test with at least this many countries

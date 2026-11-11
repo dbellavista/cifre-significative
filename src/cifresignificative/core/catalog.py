@@ -221,11 +221,12 @@ EUROSTAT_SPENDING: list[Indicator] = [
     Indicator("spend_nature", "fiscal", "gov_10a_main", {"unit": "PC_GDP", "sector": "S13", "na_item": NATURE_ITEMS}, "expenditure/revenue by economic nature, % of GDP"),
 ]
 
-# (indicator, year) points dropped at build time because the source value is a known anomaly
-EXCLUDED_POINTS = {
-    ("net_earnings_pps", 2024): "Eurostat earn_nt_net 2024 is about 1/10 of neighbouring years for all countries (flag b); 2025 is back to annual scale",
-    ("gross_earnings_pps", 2024): "same anomaly as net_earnings_pps 2024",
-}
+# (indicator, year) points dropped at build time because the source value is a known anomaly.
+# Empty since 2026-11-10: Eurostat republished earn_nt_net with 2024 on the annual scale (it was monthly, about 1/12 of the neighbouring years).
+# The 2024 break flag stays: from 2024 the average wage has a new basis (gross euro pay of the average worker: Italy +13%, Germany -7% on 2023), so 2024 onwards is not comparable with 2023 and before (SERIES_BREAKS).
+EXCLUDED_POINTS: dict[tuple[str, int], str] = {}
+# indicator -> first year of a new basis that is not comparable with the years before (never compare or average across it)
+SERIES_BREAKS = {"net_earnings_pps": 2024, "gross_earnings_pps": 2024}
 
 # Higher-education detail tables (extra dimensions kept) -> data/processed/highered.parquet, plus derived rates in the panel
 _FIELDS = ["TOTAL", "F00", "F01", "F02", "F03", "F04", "F05", "F06", "F07", "F08", "F09", "F10"]

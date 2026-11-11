@@ -1,5 +1,5 @@
 """Cells of notebook 02_italy_vs_eu."""
-from . import NOTEBOOKS, C, LAST, M
+from . import NOTEBOOKS, QUOTED, C, LAST, M
 
 NOTEBOOKS["02_italy_vs_eu"] = [
     (M, "# 02 - Italy vs the rest of the EU27: growth, productivity, convergence\nItaly in blue, the median of the other 26 members in orange (dashed), all other EU27 countries in gray."),
@@ -47,7 +47,11 @@ display(pd.DataFrame(rows).T)'''),
 ]
 
 NOTEBOOKS["02_italy_vs_eu"].append((M, """## Takeaways (numbers from the cells above; Eurostat/AMECO, 2005-2025, 2025 a first estimate)
-- **Italy is not poor, it is stagnant.** Real GDP per head is mid-table (11th-12th of 27 throughout, 12th in 2025) but grew only +5.8 log points over 2005-2025 (+6.0%), against +29.8 (+34.7%) for the median of the other members, +20.1 Germany, +17.7 Portugal, +13.0 France, +12.3 Spain. Of the 27 members only Greece (-1.0) and Luxembourg (+4.6, from a very high base) were lower. (In log points x100 throughout; to 2024 the figures were +5.2 against +27.4.)
-- **The shortfall is in the productivity/demography residual**, not hours or employment: +0.0 for Italy vs +19.9 for the median. Employment added +9.5 (median +9.9) and hours -3.7 (median -5.5). The residual mixes output per hour with age-structure effects, so it cannot say how much is each.
+- **Italy is not poor, it is stagnant.** Real GDP per head is mid-table (11th-12th of 27 throughout, 12th in 2025) but grew only +5.8 log points over 2005-2025 (+6.0%), against +32.7 (+38.7%) for the median of the other members, +20.1 Germany, +17.7 Portugal, +13.0 France, +12.3 Spain. Of the 27 members only Greece (+0.6) and Luxembourg (+4.6, from a very high base) were lower. (In log points x100 throughout; to 2024 the figures were +5.2 against +29.9. The median of the others rose by about 3 points with Eurostat's release of 5 November 2026, which revised Cyprus from +26.5 to +32.4: the median is the midpoint of Cyprus and Czechia, +33.0, with Germany, +20.1, the next below.)
+- **The shortfall is in the productivity/demography residual**, not hours or employment: +0.0 for Italy vs +22.7 for the median. Employment added +9.5 (median +9.9) and hours -3.7 (median -5.5). The residual mixes output per hour with age-structure effects, so it cannot say how much is each.
 - **Employment is the structural gap in levels:** 20-64 employment was 67.6% in 2025 against a 78.6% median (27th of 27); female employment 58.0% vs 75.7% (also last).
 - **Convergence went backwards:** GDP per head in PPS (EU27 = 100) fell from 116.6 in 2005 to 92.2 in 2025, while Germany stayed near 130. Part of this is eastern members catching up, but Spain and France show smaller falls than Italy relative to Germany."""))
+NOTEBOOKS["02_italy_vs_eu"].insert(-1, (C, QUOTED + '''quoted("employment_rate_20_64", [2025]); quoted("employment_rate_20_64_female", [2025])
+for end in (2024, 2025):
+    d = gdp_pc_growth_decomposition(panel, 2005, end); t = d["real GDP per head"]
+    print(f"real GDP per head 2005-{end}, log points x100: Italy {t[ITALY]:+.1f} | median of the others {t.drop(ITALY).median():+.1f} (true change {(np.exp(t.drop(ITALY).median() / 100) - 1) * 100:+.1f}%) | " + ", ".join(f"{c} {t[c]:+.1f}" for c in ("GRC", "LUX", "DEU", "CYP", "CZE", "PRT", "FRA", "ESP")))'''))

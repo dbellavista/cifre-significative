@@ -468,8 +468,7 @@ if __name__ == "__main__":
     mg.to_parquet(OUT_DIR / "migration.parquet", index=False)
     print(f"migration: {len(mg)} rows")
     build_sectors64().to_parquet(OUT_DIR / "sectors64.parquet", index=False)
-    ec = build_earnings_cases()
-    ec = ec[~(ec.year == 2024)]  # Eurostat 2024 annual earnings are on a different scale (see EXCLUDED_POINTS)
+    ec = build_earnings_cases()  # break in 2024 (flag b, new basis of the average wage: catalog.SERIES_BREAKS): rates within a year are fine, levels across it are not
     ec.to_parquet(OUT_DIR / "earnings_cases.parquet", index=False)
     proj = build_projections()
     proj.to_parquet(OUT_DIR / "projections_eurostat.parquet", index=False)

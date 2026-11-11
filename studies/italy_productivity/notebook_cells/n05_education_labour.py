@@ -1,5 +1,5 @@
 """Cells of notebook 05_education_labour."""
-from . import NOTEBOOKS, C, M
+from . import NOTEBOOKS, QUOTED, C, M
 
 NOTEBOOKS["05_education_labour"] = [
     (M, "# 05 - Education, labour market and wages"),
@@ -46,3 +46,5 @@ NOTEBOOKS["05_education_labour"].append((M, """## Takeaways
 - **NEET (15-29)** was 25.7% in 2015 and is 15.2% in 2024, still the 2nd highest in the EU27 (median 10.0%). Youth unemployment is 20.3% vs 15.7%.
 - **PISA:** Italian scores rose between 2006 and 2018 (maths 462 -> 487, reading 469 -> 476) and fell in 2022 to 471 in maths, 482 in reading (477 in science), a post-pandemic dip seen across countries. Germany's maths score fell from 504 (2006) to 475, so the gap with Italy went from 42 points to 4; in reading Italy (482) is now slightly above Germany (480) and France (474). Italy ranks 19th of 26 EU members in maths and 8th in reading in 2022. Spain's 2018 reading score is missing in the World Bank series. 2022 comes from the OECD workbook (docs/manual_data.md).
 - **Real compensation per employee** (AMECO nominal compensation deflated with HICP, 2005 = 100) was 90.5 in 2024 against 110.0 Germany, 103.8 France, 105.4 Spain and a 118 median: Italy is the weak end, but note this is a total-economy average with composition effects, and the 2022-23 inflation spike drives much of the last years."""))
+NOTEBOOKS["05_education_labour"].insert(-1, (C, QUOTED + '''quoted("tertiary_attainment_25_34", [2005, 2024]); quoted("edu_spend_pct_gdp", [2024]); quoted("early_leavers_18_24", [2005, 2024]); quoted("neet_rate_15_29", [2015, 2024]); quoted("youth_unemployment_rate", [2024])
+quoted("wb_pisa_math", [2006, 2018, 2022], ["DEU"]); quoted("wb_pisa_reading", [2006, 2018, 2022], ["DEU", "FRA"]); quoted("wb_pisa_science", [2022])'''))

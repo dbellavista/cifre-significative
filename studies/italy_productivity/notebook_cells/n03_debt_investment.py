@@ -1,5 +1,5 @@
 """Cells of notebook 03_debt_investment."""
-from . import NOTEBOOKS, C, M
+from . import NOTEBOOKS, QUOTED, C, M
 
 NOTEBOOKS["03_debt_investment"] = [
     (M, "# 03 - Debt, interest and investment\nIs Italy's debt a story of deficits, or of interest and growth?"),
@@ -60,9 +60,14 @@ print("Peak spread:", spread.idxmax(), round(spread.max(), 2), "| 2024:", round(
 ]
 
 NOTEBOOKS["03_debt_investment"].append((M, """## Takeaways (Eurostat general-government data; IMF for US/JP)
-- Debt was 106% of GDP in 2005 and 135% in 2024 (155% at the 2020 peak): the second highest in the EU27 in 2024, with interest at 3.9% of GDP against a 1.3% median.
+- Debt was 106% of GDP in 2005 and 134% in 2024 (155% at the 2020 peak): the second highest in the EU27 in 2024, with interest at 3.9% of GDP against a 1.3% median.
 - **It is not a primary-deficit story.** Italy's average primary balance over 2005-2024 was +0.1% of GDP, versus -0.9% for the median, +0.6% Germany, -2.6% France, -2.7% Spain.
-- **It is an interest-and-growth story.** In 2005-2014 debt rose 28.6 pp: interest added +41 pp, offset by primary surpluses (-13) and nominal growth (-9). In 2014-2024 debt was flat (-0.1 pp): interest still added +36 pp, but nominal growth (-42) paid it back, and primary balances turned to deficits (+11 pp).
+- **It is an interest-and-growth story.** In 2005-2014 debt rose 28.8 pp: interest added +41 pp, offset by primary surpluses (-13) and nominal growth (-9). In 2014-2024 debt was nearly flat (-0.7 pp): interest still added +36 pp, but nominal growth (-42) paid it back, and primary balances turned to deficits (+11 pp).
 - The Italy-Germany 10-year spread peaked at 4.0 pp in 2012 and was 1.4 pp in 2024.
-- **Public investment** (3.6% of GDP in 2024 vs 4.2% median) was much lower in 2012-2019 (2.1-2.6% of GDP vs a 3.2-3.9% median); total investment is back in line with the median (21.6% vs 21.2%), having dipped to about 17% in 2014.
+- **Public investment** (3.6% of GDP in 2024 vs 4.2% median) was much lower in 2012-2019 (2.2-2.6% of GDP vs a 3.2-3.9% median); total investment is back in line with the median (21.6% vs 21.2%), having dipped to about 17% in 2014.
 - The "other" bar is the stock-flow residual (debt changes not explained by deficit, interest and growth)."""))
+NOTEBOOKS["03_debt_investment"].insert(-1, (C, QUOTED + '''quoted("gov_interest_pct_gdp", [2024]); quoted("gov_pubinv_pct_gdp", [2024]); quoted("gfcf_pct_gdp", [2014, 2024]); quoted("gov_debt_pct_gdp", [2005, 2020, 2024])
+w = wide(panel, "gov_pubinv_pct_gdp", EU27_ISO3).loc[2012:2019]; m = w.drop(columns=ITALY).median(axis=1)
+print(f"public investment 2012-2019: Italy {w[ITALY].min():.2f}-{w[ITALY].max():.2f} | median of the others {m.min():.2f}-{m.max():.2f}")
+for a, b in ((2005, 2014), (2014, 2024)):
+    print(f"debt/GDP contributions {a}-{b}, pp:", {k: round(float(v)) for k, v in debt_decomposition(panel, ITALY, a, b).items()})'''))

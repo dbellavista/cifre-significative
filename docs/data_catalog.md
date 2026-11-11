@@ -111,7 +111,7 @@ Provenance of every download (URL, source update date, timestamp) is in `data/ra
 | wb_population | demography | World Bank `SP.POP.TOTL` |  |  | 31 geos, 2005-2025; Italy 2005-2025 |
 | bachelor_grads_30plus_pct | education | eurostat:educ_uoe_grad01 (derived) |  | derived in clean/build.py | 29 geos, 2013-2024; Italy 2013-2024 |
 | early_leavers_18_24 | education | Eurostat `edat_lfse_14` | age=Y18-24, sex=T, unit=PC, wstatus=POP |  | 29 geos, 2005-2025; Italy 2005-2025 |
-| ece_participation_3_to_school_pct | education | Eurostat `educ_uoe_enra21` | sex=T, unit=PC | children from age 3 to compulsory school age in early childhood education | 29 geos, 2013-2024; Italy 2013-2024 |
+| ece_participation_3_to_school_pct | education | Eurostat `educ_uoe_enra21` | sex=T, unit=PC | children from age 3 to compulsory school age in early childhood education | 29 geos, 2013-2025; Italy 2013-2024 |
 | edu_spend_pct_gdp | education | Eurostat `gov_10a_exp` | unit=PC_GDP, sector=S13, cofog99=GF09, na_item=TE |  | 28 geos, 2005-2025; Italy 2005-2024 |
 | grads_per_1000_pop_20_29 | education | eurostat:educ_uoe_grad02 (derived) |  | derived in clean/build.py | 29 geos, 2005-2024; Italy 2013-2024 |
 | ict_share_grads_pct | education | eurostat:educ_uoe_grad02 (derived) |  | derived in clean/build.py | 29 geos, 2005-2024; Italy 2013-2024 |
@@ -145,8 +145,8 @@ Provenance of every download (URL, source update date, timestamp) is in `data/ra
 | stem_share_grads_female_pct | education | eurostat:educ_uoe_grad02 (derived) |  | derived in clean/build.py | 29 geos, 2005-2024; Italy 2013-2024 |
 | stem_share_grads_male_pct | education | eurostat:educ_uoe_grad02 (derived) |  | derived in clean/build.py | 29 geos, 2005-2024; Italy 2013-2024 |
 | stem_share_grads_pct | education | eurostat:educ_uoe_grad02 (derived) |  | derived in clean/build.py | 29 geos, 2005-2024; Italy 2013-2024 |
-| stem_share_students_pct | education | eurostat:educ_uoe_enrt03 (derived) |  | derived in clean/build.py | 29 geos, 2013-2024; Italy 2013-2024 |
-| students_per_100_pop_20_24 | education | eurostat:educ_uoe_enrt03 (derived) |  | derived in clean/build.py | 29 geos, 2012-2024; Italy 2013-2024 |
+| stem_share_students_pct | education | eurostat:educ_uoe_enrt03 (derived) |  | derived in clean/build.py | 29 geos, 2013-2025; Italy 2013-2024 |
+| students_per_100_pop_20_24 | education | eurostat:educ_uoe_enrt03 (derived) |  | derived in clean/build.py | 29 geos, 2012-2025; Italy 2013-2024 |
 | tertiary_attainment_25_34 | education | Eurostat `edat_lfse_03` | age=Y25-34, sex=T, isced11=ED5-8, unit=PC |  | 29 geos, 2005-2025; Italy 2005-2025 |
 | tertiary_attainment_25_34_female | education | Eurostat `edat_lfse_03` | age=Y25-34, sex=F, isced11=ED5-8, unit=PC |  | 29 geos, 2005-2025; Italy 2005-2025 |
 | tertiary_attainment_25_34_male | education | Eurostat `edat_lfse_03` | age=Y25-34, sex=M, isced11=ED5-8, unit=PC |  | 29 geos, 2005-2025; Italy 2005-2025 |
@@ -162,7 +162,7 @@ Provenance of every download (URL, source update date, timestamp) is in `data/ra
 | women_share_grads_pct | education | eurostat:educ_uoe_grad02 (derived) |  | derived in clean/build.py | 29 geos, 2005-2024; Italy 2013-2024 |
 | women_share_ict_grads_pct | education | eurostat:educ_uoe_grad02 (derived) |  | derived in clean/build.py | 29 geos, 2005-2024; Italy 2013-2024 |
 | women_share_stem_grads_pct | education | eurostat:educ_uoe_grad02 (derived) |  | derived in clean/build.py | 29 geos, 2005-2024; Italy 2013-2024 |
-| women_share_students_pct | education | eurostat:educ_uoe_enrt03 (derived) |  | derived in clean/build.py | 29 geos, 2012-2024; Italy 2013-2024 |
+| women_share_students_pct | education | eurostat:educ_uoe_enrt03 (derived) |  | derived in clean/build.py | 29 geos, 2012-2025; Italy 2013-2024 |
 | current_account_pct_gdp | external | Eurostat `tipsbp20` | unit=PC_GDP, partner=WRL_REST |  | 27 geos, 2005-2025; Italy 2005-2025 |
 | imf_current_account_pct_gdp | external | IMF WEO `BCA_NGDPD` |  | general government unless stated | 30 geos, 2005-2025; Italy 2005-2025 |
 | gov_balance_pct_gdp | fiscal | Eurostat `gov_10dd_edpt1` | unit=PC_GDP, sector=S13, na_item=B9 |  | 28 geos, 2005-2025; Italy 2005-2025 |
@@ -207,12 +207,12 @@ Provenance of every download (URL, source update date, timestamp) is in `data/ra
 | arope | inequality | Eurostat `ilc_peps01n` | age=TOTAL, sex=T, unit=PC | 2015+ (new definition) | 29 geos, 2015-2025; Italy 2015-2025 |
 | arope_linked | inequality | eurostat:ilc_peps01+ilc_peps01n (linked) |  |  | 29 geos, 2005-2025; Italy 2005-2025 |
 | arope_old | inequality | Eurostat `ilc_peps01` | age=TOTAL, sex=T, unit=PC | 2003-2020, methodology break vs arope | 29 geos, 2005-2020; Italy 2005-2020 |
-| gini | inequality | Eurostat `ilc_di12` | age=TOTAL, statinfo=GINI_HND |  | 29 geos, 2014-2025; Italy 2014-2025 |
+| gini | inequality | Eurostat `ilc_di12` | age=TOTAL, statinfo=GINI_HND |  | 29 geos, 2005-2025; Italy 2005-2025 |
 | inwork_poverty_18_64 | inequality | Eurostat `ilc_iw01` | wstatus=EMP, sex=T, age=Y18-64, unit=PC | in-work at-risk-of-poverty rate | 29 geos, 2005-2025; Italy 2005-2025 |
 | wb_gini | inequality | World Bank `SI.POV.GINI` |  |  | 30 geos, 2005-2024; Italy 2005-2023 |
-| gfcf_pct_gdp | investment | Eurostat `nama_10_gdp` | na_item=P51G, unit=PC_GDP |  | 29 geos, 2005-2025; Italy 2005-2025 |
+| gfcf_pct_gdp | investment | Eurostat `nama_10_gdp` | na_item=P51G, unit=PC_GDP |  | 28 geos, 2005-2025; Italy 2005-2025 |
 | gov_pubinv_pct_gdp | investment | Eurostat `gov_10a_main` | unit=PC_GDP, sector=S13, na_item=P51G |  | 28 geos, 2005-2025; Italy 2005-2025 |
-| rd_pct_gdp | investment | Eurostat `rd_e_gerdtot` | sectperf=TOTAL, unit=PC_GDP |  | 31 geos, 2005-2024; Italy 2005-2024 |
+| rd_pct_gdp | investment | Eurostat `rd_e_gerdtot` | sectperf=TOTAL, unit=PC_GDP |  | 31 geos, 2005-2025; Italy 2005-2025 |
 | wb_gfcf_pct_gdp | investment | World Bank `NE.GDI.FTOT.ZS` |  |  | 31 geos, 2005-2025; Italy 2005-2025 |
 | ameco_comp_per_employee_ncu | labour | AMECO `HWCDW` |  |  | 31 geos, 2005-2025; Italy 2005-2025 |
 | ameco_hours_per_worker | labour | AMECO `NLHA` |  |  | 31 geos, 2005-2025; Italy 2005-2025 |
@@ -223,9 +223,9 @@ Provenance of every download (URL, source update date, timestamp) is in `data/ra
 | employment_rate_60_64_female | labour | Eurostat `lfsa_ergan` | age=Y60-64, sex=F, unit=PC, citizen=TOTAL |  | 29 geos, 2005-2025; Italy 2005-2025 |
 | employment_rate_60_64_male | labour | Eurostat `lfsa_ergan` | age=Y60-64, sex=M, unit=PC, citizen=TOTAL |  | 29 geos, 2005-2025; Italy 2005-2025 |
 | imf_unemployment_rate | labour | IMF WEO `LUR` |  | general government unless stated | 30 geos, 2005-2025; Italy 2005-2025 |
-| labour_productivity_pps_eu27 | labour | Eurostat `nama_10_lp_ulc` | na_item=RLPR_HW, unit=I20 | real labour productivity per hour, index 2020=100 (verify) | 27 geos, 2005-2025; Italy 2005-2025 |
+| labour_productivity_pps_eu27 | labour | Eurostat `nama_10_lp_ulc` | na_item=RLPR_HW, unit=I20 | real labour productivity per hour, index 2020=100 (verify) | 28 geos, 2005-2025; Italy 2005-2025 |
 | neet_rate_15_29 | labour | Eurostat `edat_lfse_20` | age=Y15-29, sex=T, unit=PC, wstatus=NEMP |  | 29 geos, 2005-2025; Italy 2005-2025 |
-| nominal_ulc | labour | Eurostat `nama_10_lp_ulc` | na_item=NULC_HW, unit=I20 | index 2020=100 | 27 geos, 2005-2025; Italy 2005-2025 |
+| nominal_ulc | labour | Eurostat `nama_10_lp_ulc` | na_item=NULC_HW, unit=I20 | index 2020=100 | 28 geos, 2005-2025; Italy 2005-2025 |
 | unemployment_rate | labour | Eurostat `lfsa_urgan` | age=Y15-74, sex=T, unit=PC, citizen=TOTAL |  | 29 geos, 2005-2025; Italy 2005-2025 |
 | wb_unemployment_ilo | labour | World Bank `SL.UEM.TOTL.ZS` |  |  | 31 geos, 2005-2025; Italy 2005-2025 |
 | youth_unemployment_rate | labour | Eurostat `lfsa_urgan` | age=Y15-24, sex=T, unit=PC, citizen=TOTAL |  | 29 geos, 2005-2025; Italy 2005-2025 |
@@ -247,9 +247,9 @@ Provenance of every download (URL, source update date, timestamp) is in `data/ra
 | net_migration_registered_per_1000 | migration | eurostat:migr_imm8/migr_emi2 (derived) |  | derived in clean/build.py | 29 geos, 2005-2024; Italy 2005-2024 |
 | ameco_output_gap_pct_potential | output | AMECO `AVGDGP` |  |  | 30 geos, 2005-2025; Italy 2005-2025 |
 | ameco_tfp_index | output | AMECO `ZVGDF` |  |  | 31 geos, 2005-2025; Italy 2005-2025 |
-| gdp_growth | output | Eurostat `nama_10_gdp` | na_item=B1GQ, unit=CLV_PCH_PRE | real growth % | 29 geos, 2005-2025; Italy 2005-2025 |
-| gdp_nominal_meur | output | Eurostat `nama_10_gdp` | na_item=B1GQ, unit=CP_MEUR | current prices, EUR million | 29 geos, 2005-2025; Italy 2005-2025 |
-| gdp_pps_pc_eu27 | output | Eurostat `nama_10_pc` | na_item=B1GQ, unit=PC_EU27_2020_HAB_MEUR_CP | index EU27=100 | 29 geos, 2005-2025; Italy 2005-2025 |
+| gdp_growth | output | Eurostat `nama_10_gdp` | na_item=B1GQ, unit=CLV_PCH_PRE | real growth % | 28 geos, 2005-2025; Italy 2005-2025 |
+| gdp_nominal_meur | output | Eurostat `nama_10_gdp` | na_item=B1GQ, unit=CP_MEUR | current prices, EUR million | 28 geos, 2005-2025; Italy 2005-2025 |
+| gdp_pps_pc_eu27 | output | Eurostat `nama_10_pc` | na_item=B1GQ, unit=PC_EU27_2020_HAB_MEUR_CP | index EU27=100 | 28 geos, 2005-2025; Italy 2005-2025 |
 | gdp_real_pc | output | Eurostat `nama_10_pc` | na_item=B1GQ, unit=CLV20_EUR_HAB | chain-linked 2020 EUR per head | 28 geos, 2005-2025; Italy 2005-2025 |
 | wb_gdp_growth | output | World Bank `NY.GDP.MKTP.KD.ZG` |  |  | 31 geos, 2005-2025; Italy 2005-2025 |
 | wb_gdp_pc_ppp_const | output | World Bank `NY.GDP.PCAP.PP.KD` |  |  | 31 geos, 2005-2025; Italy 2005-2025 |

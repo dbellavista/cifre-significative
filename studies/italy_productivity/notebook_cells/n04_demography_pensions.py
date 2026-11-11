@@ -1,5 +1,5 @@
 """Cells of notebook 04_demography_pensions."""
-from . import NOTEBOOKS, C, M
+from . import NOTEBOOKS, QUOTED, C, M
 
 NOTEBOOKS["04_demography_pensions"] = [
     (M, "# 04 - Demography and pensions"),
@@ -40,3 +40,5 @@ NOTEBOOKS["04_demography_pensions"].append((M, """## Takeaways
 - **But Italy has moved a lot:** 55-64 employment rose from 31.4% (2005) to 59.0%, and the effective exit age for men from 59.9 to 64.0 (EU median 63.6).
 - **Design in 2024 (OECD):** net replacement rate for an average earner 79% (8th of 30; median 72%), gross 70.6% (8th; median 54%); normal retirement age 64.8 now but 70 for future entrants (rank 4-5 of 30). The retirement-age path is the main reform lever already legislated.
 - **Old-age poverty is not unusual:** at-risk-of-poverty among 65+ was 17.6% against a 16.6% median in 2024 (gap about 0 sd). The pension system protects the old comparatively well; the cost falls on public finances and on younger cohorts (see notebook 05)."""))
+NOTEBOOKS["04_demography_pensions"].insert(-1, (C, QUOTED + '''quoted("old_age_dependency", [2024]); quoted("median_age", [2024]); quoted("fertility_rate", [2024]); quoted("pension_spend_pct_gdp", [2024])
+quoted("employment_rate_55_64", [2005, 2024]); quoted("oecd_exit_age_male", [2005, 2024]); quoted("arop_65plus", [2024])'''))

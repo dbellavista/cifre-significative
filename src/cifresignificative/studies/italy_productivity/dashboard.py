@@ -554,7 +554,7 @@ def view_gender(panel: pd.DataFrame) -> None:
         st.caption(tr("The unadjusted pay gap is small in Italy partly because fewer women are employed; the overall earnings gap (pay x hours x employment, 4-yearly, latest 2018) was 43% vs a 28% median.",
                       "Il divario salariale grezzo è basso in Italia anche perché lavorano meno donne; il divario complessivo (paga x ore x occupazione, quadriennale, ultimo 2018) era 43% contro una mediana del 28%."))
     else:
-        items = [(D.wide(panel, "gross_earnings_pps"), "Gross annual earnings, average worker (PPS; 2024 excluded)"), (D.wide(panel, "net_earnings_pps"), "Net annual earnings (PPS)"),
+        items = [(D.wide(panel, "gross_earnings_pps"), "Gross annual earnings, average worker (PPS; new basis from 2024)"), (D.wide(panel, "net_earnings_pps"), "Net annual earnings (PPS; new basis from 2024)"),
                  (D.wide(panel, "labour_cost_hourly_eur"), "Hourly labour cost (EUR)"), (D.wide(panel, "tax_wedge_low_wage"), "Tax wedge, low-wage earners (%)"),
                  (D.wide(panel, "inwork_poverty_18_64"), "In-work poverty (% of workers)")]
     st.plotly_chart(C.multiples_fig(items), use_container_width=True)

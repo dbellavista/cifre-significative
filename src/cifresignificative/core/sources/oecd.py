@@ -31,7 +31,7 @@ def fetch(flow: str, force: bool = False) -> Path:
     if out.exists() and not force:
         return out
     url = f"{BASE},{FLOWS[flow]},/all?dimensionAtObservation=AllDimensions"
-    resp = requests.get(url, headers={"Accept": "application/vnd.sdmx.data+csv"}, timeout=300)
+    resp = requests.get(url, headers={"Accept": "application/vnd.sdmx.data+csv; labels=id"}, timeout=300)
     resp.raise_for_status()
     out.write_bytes(resp.content)
     record(f"oecd_{flow}", source="oecd-sdmx", dataset=FLOWS[flow], url=url)

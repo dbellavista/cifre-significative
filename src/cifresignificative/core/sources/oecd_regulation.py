@@ -25,7 +25,7 @@ def fetch(force: bool = False) -> list[Path]:
         path = RAW_DIR / f"{name}.csv"
         if force or not path.exists():
             url = f"{BASE}/{flow}/all?dimensionAtObservation=AllDimensions"
-            resp = requests.get(url, headers={"Accept": "application/vnd.sdmx.data+csv"}, timeout=300)
+            resp = requests.get(url, headers={"Accept": "application/vnd.sdmx.data+csv; labels=id"}, timeout=300)
             resp.raise_for_status()
             if not resp.text.startswith("DATAFLOW,"):
                 raise RuntimeError(f"OECD {name}: not a CSV answer: {resp.text[:80]!r}")

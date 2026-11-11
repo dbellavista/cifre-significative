@@ -6,6 +6,14 @@ import importlib
 NOTEBOOKS: dict[str, list[tuple[str, str]]] = {}
 M, C = "md", "code"
 LAST = "LAST = 2024  # last year with broad coverage (2025 is provisional for many series)\n"
+# prepended to the "figures quoted in the takeaways" cell: every number of the takeaways must be printed by a cell (tests/studies/italy_productivity/test_takeaways.py)
+QUOTED = '''# Figures quoted in the takeaways: Italy, median of the other members, rank (1 = highest) among the members with a value
+def quoted(ind, years, countries=()):
+    w = wide(panel, ind, EU27_ISO3)
+    for y in years:
+        r = w.loc[y].dropna()
+        print(f"{ind} {y}: Italy {r[ITALY]:.2f} | median of the others {r.drop(ITALY).median():.2f} | rank {int(r.rank(ascending=False)[ITALY])}/{len(r)}" + "".join(f" | {c} {r[c]:.2f}" for c in countries))  # two decimals: a takeaway rounded to one is then checked without ties
+'''
 SETUP = '''import os, warnings
 from pathlib import Path
 while not Path("pyproject.toml").exists() and Path.cwd() != Path.cwd().parent:
