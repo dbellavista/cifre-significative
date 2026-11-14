@@ -36,6 +36,16 @@ def italy_area(geo: str) -> str:
     return ITALY_AREAS.get(geo[:3], "other")
 
 
+def before_breaks(panel: pd.DataFrame) -> pd.DataFrame:
+    """The panel without the years on a new basis (catalog.SERIES_BREAKS): for anything that compares, averages or correlates across years.
+    Levels of a single year on either side of the break stay available through `wide` on the full panel."""
+    from cifresignificative.core.catalog import SERIES_BREAKS
+    drop = pd.Series(False, index=panel.index)
+    for ind, year in SERIES_BREAKS.items():
+        drop |= (panel.indicator == ind) & (panel.year >= year)
+    return panel[~drop]
+
+
 def wide(panel: pd.DataFrame, indicator: str, countries=None) -> pd.DataFrame:
     """year x iso3 table for one indicator (EU27 members + benchmarks; aggregates excluded)."""
     d = panel[panel.indicator == indicator]

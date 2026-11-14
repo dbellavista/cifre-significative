@@ -307,3 +307,16 @@ def test_ameco_series_cover_every_member(panel):
     for ind, sub in panel[panel.source.str.startswith("ameco:")].groupby("indicator"):
         missing = members - set(sub.iso3)
         assert not missing, f"{ind} has no AMECO values for {sorted(missing)}"
+
+
+def test_before_breaks_drops_the_years_on_a_new_basis(panel):
+    from cifresignificative.core.catalog import SERIES_BREAKS
+    from cifresignificative.studies.italy_productivity.analysis import corr
+    from cifresignificative.studies.italy_productivity.analysis.data import (
+        before_breaks,
+    )
+    d = before_breaks(panel)
+    for ind, year in SERIES_BREAKS.items():
+        assert d[d.indicator == ind].year.max() == year - 1 and panel[panel.indicator == ind].year.max() >= year
+    assert len(panel) - len(d) == sum(((panel.indicator == i) & (panel.year >= y)).sum() for i, y in SERIES_BREAKS.items())
+    assert corr.panel_matrix(panel)["net_earnings_pps"].dropna().index.get_level_values("year").max() < SERIES_BREAKS["net_earnings_pps"]

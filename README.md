@@ -14,6 +14,7 @@ Un articolo per risultato; i numeri citati si ricalcolano con il codice di quest
 | Cifre significative (Italia) | [L'Italia non è povera, è ferma](https://danielebellavista.substack.com/p/litalia-non-e-povera-e-ferma) | `studies/italy_productivity/notebooks/` |
 | Cifre significative (Italia) | [Un problema di produttività dentro ogni settore](https://danielebellavista.substack.com/p/un-problema-di-produttivita-dentro) | `studies/italy_productivity/notebooks/` |
 | Cifre significative (Italia) | [Le piccole imprese pesano, ma non spiegano la frenata](https://danielebellavista.substack.com/p/le-piccole-imprese-pesano-ma-non) | `studies/italy_productivity/notebooks/` |
+| Cifre significative (Italia) | [La regolamentazione dei mercati: nessuna conferma dai dati](https://danielebellavista.substack.com/p/la-regolamentazione-dei-mercati-nessuna) | `studies/italy_productivity/notebooks/35_regulation_productivity.ipynb` |
 | Cesena edition | [Cesena cresce? Dipende da cosa misuriamo](https://danielebellavista.substack.com/p/cesena-cresce-dipende-da-cosa-misuriamo) | `studies/cesena/notebooks/` |
 
 ## Cosa c'è

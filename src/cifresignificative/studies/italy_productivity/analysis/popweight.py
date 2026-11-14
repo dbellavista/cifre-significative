@@ -6,6 +6,7 @@ from . import corr
 from .data import (
     EU27_ISO3,
     ITALY,
+    before_breaks,
     eu_median_ex_italy,
     load_panel,
     weighted_median_ex_italy,
@@ -21,6 +22,7 @@ def benchmark_gaps(panel: pd.DataFrame, indicators: list[str] | None = None, win
 
     The weighted median is skipped (NaN) where `wide` has too few members in a year; both medians use the years where both exist.
     """
+    panel = before_breaks(panel)  # a window mean must not mix two bases of a series (earnings from 2024)
     pop = wide(panel, "population", EU27_ISO3)
     if indicators is None:
         ind = sorted(set(panel.indicator) - {"population"})

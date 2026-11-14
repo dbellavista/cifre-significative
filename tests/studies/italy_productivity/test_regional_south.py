@@ -119,3 +119,14 @@ def test_extra_table_has_eqi_for_every_italian_region_and_wave():
     e = d[d.indicator.eq("nuts2_eqi")]
     assert e[e.geo.str.startswith("IT")].groupby("year").geo.nunique().eq(21).all() and set(e.year) == {2010, 2013, 2017, 2021, 2024}
     assert {"nuts2_sbs_local_units_per_1000_inhabitants", "nuts2_sbs_manufacturing_employment_share_pct", "nuts2_sbs_wages_per_employee_keur"} <= set(d.indicator)
+
+
+def test_cpt_archive_link_and_extraction():
+    import io
+    import zipfile
+    html = '<a href="/media/abc/pa_spese-2.zip">x</a><a href="/media/2pg/spa_spese-2.zip">y</a>'
+    assert cpt.find_archive([html]) == cpt.HOST + "/media/2pg/spa_spese-2.zip" and cpt.find_archive(["<a href='/x.csv'>"]) is None
+    buf = io.BytesIO()
+    with zipfile.ZipFile(buf, "w") as z:
+        z.writestr("SPA_S/SPA_S_SE/SP_SPA_SE_TS_CETOT.csv", "a"); z.writestr("SPA_S/SPA_S_SE/SP_SPA_SE_TS_CETOT.xlsx", "b"); z.writestr("SPA_S/SPA_S_SE/SP_SPA_SE_CETOT.csv", "c")
+    assert cpt.extract(buf.getvalue()) == {"sp_spa_se_ts_cetot.csv": b"a"}

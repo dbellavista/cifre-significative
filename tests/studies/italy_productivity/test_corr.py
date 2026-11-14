@@ -156,3 +156,27 @@ def test_split_sample_keeps_stable_pair_and_drops_period_pair():
 
 def test_split_sample_null_gives_no_replication():
     assert max(corr.split_sample_null(_split_panel(), n_perm=3, n_min=20)) == 0
+
+
+def test_gdp_control_and_real_pension_measure_separate_the_denominator():
+    """A ratio to GDP correlates with a cyclical outcome through the denominator alone; the GDP control and a measure without GDP in it remove that."""
+    import numpy as np
+    import pandas as pd
+
+    from cifresignificative.studies.italy_productivity.analysis import corr
+    from cifresignificative.studies.italy_productivity.analysis.experiments import (
+        national as N,
+    )
+    rng = np.random.default_rng(0); rows = []
+    for c in corr.COUNTRIES[:20]:
+        cycle = rng.normal(0, 0.05, 20).cumsum()
+        for t in range(20):
+            gdp = 20000 * np.exp(0.02 * t + cycle[t]); pop = 1e7
+            pension_euro = 0.12 * 20000 * np.exp(0.02 * t) * pop * np.exp(rng.normal(0, 0.01))  # follows the trend, not the cycle
+            v = {"gdp_real_pc": gdp, "gdp_nominal_meur": gdp * pop / 1e6, "population": pop, "wb_pop_65plus_pct": 20.0, "hicp_inflation": 0.0,
+                 "pension_spend_pct_gdp": pension_euro / (gdp * pop) * 100, "neet_rate_15_29": 15 - 60 * cycle[t] + rng.normal(0, 0.5),
+                 "employment_rate_55_64": 50 + 60 * cycle[t] + rng.normal(0, 0.5), "edu_spend_pct_gdp": 5 + rng.normal(0, 0.1)}
+            rows += [{"iso3": c, "year": 2005 + t, "indicator": k, "value": x, "flag": None} for k, x in v.items()]
+    r = N.run_pension_real(pd.DataFrame(rows)).set_index(["id", "sample", "spec"])
+    assert r.loc[("H6", "all members", "pension % of GDP"), "p"] < 0.01  # the ratio picks up the cycle
+    assert r.loc[("H6", "all members", "real per person 65+"), "p"] > 0.05 and r.loc[("H7", "all members", "real per person 65+, GDP control"), "p"] > 0.05

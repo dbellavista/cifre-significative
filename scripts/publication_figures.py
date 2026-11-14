@@ -1,11 +1,12 @@
-"""Figures for the Italian series of posts, labels in Italian, same palette as the notebooks.
+"""Figures for the Italian series of posts, with optional English labels and the notebook palette.
 
 Figures are drawn for a phone screen (narrow, large text, few labels); see apply_mobile_style.
 
 Usage: uv run python scripts/publication_figures.py [00 ...]   -> figures/NN_name.png; the numbers quoted in
 the post are printed so they can be re-checked against the notebooks before publishing.
+Add --lang en for published posts 00-02; --out PATH overrides the figure directory.
 """
-import sys
+import argparse
 import textwrap
 import warnings
 from pathlib import Path
@@ -14,6 +15,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from matplotlib.axes import Axes
+from publication_labels import EN
 
 from cifresignificative.core.sources import oecd_regulation as OR
 from cifresignificative.core.viz import style
@@ -26,6 +28,7 @@ from cifresignificative.core.viz.style import (
     SURFACE,
     apply_style,
 )
+from cifresignificative.core.viz.translation import translate_figure
 from cifresignificative.studies.italy_productivity.analysis import industry_panel
 from cifresignificative.studies.italy_productivity.analysis import regulation as RGL
 from cifresignificative.studies.italy_productivity.analysis import size_class as SC
@@ -55,6 +58,7 @@ from cifresignificative.studies.italy_productivity.analysis.timeline import (
 )
 
 OUT = Path("figures")
+LANG = "it"
 def apply_mobile_style() -> None:
     plt.rcParams.update({"font.size": 12, "axes.titlesize": 13, "axes.labelsize": 11.5, "xtick.labelsize": 11, "ytick.labelsize": 11, "legend.fontsize": 11, "axes.titlelocation": "left"})
 W_PX = 1080  # phone layout: figures are 5.4 in wide at 200 dpi, shown at about 360 px on a phone, so text is at least 11 pt
@@ -66,6 +70,8 @@ def save(fig, name: str, note: str = "", dy: float = -0.02) -> None:
     OUT.mkdir(parents=True, exist_ok=True)
     if note:
         fig.text(0.0, dy, note, fontsize=7.5, color=INK2, ha="left", va="top")
+    if LANG == "en":
+        translate_figure(fig, EN)
     fig.savefig(OUT / f"{name}.png", dpi=round(W_PX / 5.4), bbox_inches="tight", pad_inches=0.15)
     plt.close(fig)
 
@@ -183,6 +189,8 @@ def _cover(name: str, title: str, subtitle: str, rows: list[tuple[str, float, st
         texts += [ax.text(x0, y + 0.62, who, color=col, fontsize=22, fontweight="bold", ha="left", va="center"), ax.text(x0, y, text(val), color=col, fontsize=62, fontweight="bold", ha="left", va="center")]
         ax.barh(y - 0.55, (x1 - x0) * val / scale, left=x0, height=0.22, color=col)
     texts.append(ax.text(6, 0.3, "Cifre significative", color=dim, fontsize=12, ha="center", va="center"))
+    if LANG == "en":
+        translate_figure(fig, EN)
     fig.canvas.draw(); inv = ax.transData.inverted()
     for t in texts:
         a, b = inv.transform(t.get_window_extent()); assert a[0] >= x0 - 0.01 and b[0] <= x1 + 0.01, f"cover {name}: {t.get_text()!r} leaves the portrait-crop safe zone ({a[0]:.2f}-{b[0]:.2f} in)"
@@ -562,15 +570,25 @@ def fig03_italy(it: pd.DataFrame) -> None:
 
 
 def cover03(pmr: pd.DataFrame) -> None:
-    """Share/preview image 1200x630: the accountants' regulation index, Italy and the median of the others."""
-    p = RGL.position(pmr, measures=["ACCOUNTANTS"], years=(S03_PMR,)).iloc[0]; print(f"03 cover: Italy {p.italy:.2f}, median {p.median_others:.2f}, rank {p['rank']:.0f}")
-    _cover("03", "La regolamentazione dei mercati", f"Indice OCSE per i commercialisti, {S03_PMR} (0-6)", [("Italia", p.italy, ITALY_C), ("Mediana UE", p.median_others, EU_C)], lambda v: f"{v:.1f}", p.italy)
+    """Share/preview image 1200x630: overall PMR in the latest wave, Italy near the median of the other EU members."""
+    year = 2023
+    p = RGL.position(pmr, measures=["PMR"], years=(year,)).iloc[0]; print(f"03 cover ({year}, overall PMR): Italy {p.italy:.2f}, median {p.median_others:.2f}, rank {p['rank']:.0f} of {p.n_eu:.0f}")
+    _cover("03", "Italia a metà classifica", f"Regolamentazione: indice OCSE, {year} (0-6)", [(f"Italia ({int(p['rank'])}ª su {int(p.n_eu)})", p.italy, ITALY_C), (f"Mediana altri {int(p.n_eu) - 1} UE", p.median_others, EU_C)], lambda v: f"{v:.2f}", max(p.italy, p.median_others))
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("posts", nargs="*", choices=["00", "01", "02", "03"])
+    parser.add_argument("--lang", choices=["it", "en"], default="it")
+    parser.add_argument("--out", type=Path, help="Override the figure output directory")
+    args = parser.parse_args()
+    if args.lang == "en" and (not args.posts or "03" in args.posts):
+        parser.error("English figures currently support the published posts: specify 00, 01 and/or 02")
+    LANG = args.lang
+    OUT = args.out or (OUT.parent / "en/figures" if LANG == "en" else OUT)
     warnings.filterwarnings("ignore")
     apply_style(); apply_mobile_style(); style.FIG_DIR = OUT
-    only = set(sys.argv[1:])
+    only = set(args.posts)
     if not only or "00" in only:
         panel, lh = load_panel(), load_long()
         fig00_decomposition(panel); fig00_long(lh); fig00_synth(lh); fig00_governments(lh); cover00(panel)

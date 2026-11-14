@@ -51,6 +51,7 @@ from .national import (
     run_industry_all,
     run_latent_all,
     run_lead_lag,
+    run_pension_real,
     run_regimes,
     run_split_sample,
 )
@@ -110,6 +111,7 @@ __all__ = [
     "run_nuts1_south",
     "run_nuts_all",
     "run_opencoesione_all",
+    "run_pension_real",
     "run_regimes",
     "run_regional_all",
     "run_regional_hypotheses",

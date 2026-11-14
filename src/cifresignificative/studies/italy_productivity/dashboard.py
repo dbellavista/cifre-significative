@@ -223,9 +223,9 @@ def view_correlations(panel: pd.DataFrame) -> None:
         st.dataframe(d.assign(indicator=d.indicator.map(label))[["indicator", "n", "rho", "q_value", "significant"]].round(3), use_container_width=True, hide_index=True)
     with tab_h:
         h = res["e7_hypotheses"]
-        st.caption(tr("Panel fixed effects (country + year), country-clustered. Sign agrees = matches the literature's expected direction. Italy residual = distance from the cross-country line, in SDs.",
-                      "Effetti fissi (paese + anno), errori standard per paese. Segno concorde = direzione attesa dalla letteratura. Residuo Italia = distanza dalla retta tra paesi, in DS."))
-        st.dataframe(h.assign(y=h.y.map(label), x=h.x.map(label))[["id", "theme", "label", "y", "x", "coef", "p", "q_value", "sign_agrees", "p_ex_irl", "italy_resid_z", "n_obs"]].round(3),
+        st.caption(tr("Panel fixed effects (country + year), country-clustered. Sign agrees = matches the literature's expected direction. GDP control = the same test with log real GDP per head held fixed (ratios to GDP move with a country's own cycle). Italy residual = distance from the cross-country line, in SDs.",
+                      "Effetti fissi (paese + anno), errori standard per paese. Segno concorde = direzione attesa dalla letteratura. Controllo PIL = lo stesso test a parità di PIL reale per abitante (i rapporti sul PIL si muovono con il ciclo del paese). Residuo Italia = distanza dalla retta tra paesi, in DS."))
+        st.dataframe(h.assign(y=h.y.map(label), x=h.x.map(label))[[c for c in ("id", "theme", "label", "y", "x", "coef", "p", "q_value", "sign_agrees", "p_ex_irl", "p_gdp_control", "gdp_control", "italy_resid_z", "n_obs") if c in h.columns]].round(3),
                      use_container_width=True, hide_index=True)
         if "e4_lead_lag" in res:
             with st.expander(tr("Lead-lag: does X at t-k predict Y at t better than the reverse?", "Anticipo-ritardo: X a t-k prevede Y a t meglio del contrario?")):

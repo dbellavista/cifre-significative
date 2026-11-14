@@ -2,6 +2,7 @@
 from dataclasses import asdict, dataclass
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 
 from cifresignificative.studies.italy_productivity.analysis import corr
@@ -14,6 +15,8 @@ from cifresignificative.studies.italy_productivity.analysis.data import (
 )
 
 from .common import INCOME, OUT, WINDOWS
+
+GDP_CONTROL = "log_gdp_real_pc"  # robustness control for the ratio-to-GDP hypotheses (a country's own cycle moves both sides)
 
 HYPOTHESES = [  # (id, theme, y, x, expected sign of the association, label) - from docs/literature/README.md
     ("H1", "Productivity & growth", "gdp_real_pc", "ameco_tfp_index", 1, "Higher TFP goes with higher GDP per head"),
@@ -80,6 +83,7 @@ def run_hypotheses(panel: pd.DataFrame | None = None) -> pd.DataFrame:
     """E7: panel FE (entity + year, clustered) for each literature hypothesis, with and without Ireland, and a cross-section Italy-fit."""
     panel = load_panel() if panel is None else panel
     M = corr.panel_matrix(panel)
+    MG = M.assign(**{GDP_CONTROL: np.log(M[INCOME])})
     X = corr.cross_section(M, "level", WINDOWS["recent"])
     rows = []
     for hid, theme, y, x, sign, label in HYPOTHESES:
@@ -89,13 +93,57 @@ def run_hypotheses(panel: pd.DataFrame | None = None) -> pd.DataFrame:
             rows.append({"id": hid, "theme": theme, "y": y, "x": x, "label": label, "status": "insufficient data"})
             continue
         coef = r["coef"][x]
+        rg = corr.panel_fe(MG, y, [x, GDP_CONTROL]) if y != INCOME else {}  # robustness column, not part of the pre-specified test
         rows.append({"id": hid, "theme": theme, "y": y, "x": x, "label": label, "expected_sign": sign, "coef": coef, "p": r["p"][x],
                      "n_obs": r["n_obs"], "n_countries": r["n_countries"], "coef_ex_irl": r_ex.get("coef", {}).get(x), "p_ex_irl": r_ex.get("p", {}).get(x),
-                     "sign_agrees": bool(coef * sign > 0), "italy_resid_z": fit.get("resid_z"), "status": "ok"})
+                     "sign_agrees": bool(coef * sign > 0), "italy_resid_z": fit.get("resid_z"), "status": "ok",
+                     "coef_gdp_control": rg.get("coef", {}).get(x), "p_gdp_control": rg.get("p", {}).get(x)})
     out = pd.DataFrame(rows)
     ok = out.status == "ok"
     out.loc[ok, "q_value"] = corr.fdr(out[ok], 0.05).q_value
+    out["gdp_control"] = [_gdp_control_verdict(r) for r in out.itertuples()]
     return out
+
+
+def _gdp_control_verdict(r) -> str:
+    """How a hypothesis that passes the pre-specified test reads once log real GDP per head is held fixed (5% level, same sign)."""
+    if r.status != "ok" or not r.q_value <= 0.05:
+        return "not significant before"
+    if r.y == INCOME:
+        return "not applicable (the outcome is GDP per head)"
+    return "holds" if r.p_gdp_control < 0.05 and r.coef_gdp_control * r.coef > 0 else "not distinguishable from the cycle"
+
+
+NON_EURO = ("BGR", "CZE", "DNK", "HUN", "POL", "ROU", "SWE")  # national currency for most of 2005-2025: their euro amounts move with the exchange rate
+PENSION_REAL = "log_pension_real_per_65plus"
+PENSION_TESTS = [("H5", "edu_spend_pct_gdp"), ("H6", "neet_rate_15_29"), ("H7", "employment_rate_55_64")]
+
+
+def pension_real_per_elderly(M: pd.DataFrame) -> pd.Series:
+    """Log of old-age public spending per person aged 65+, deflated with the national HICP: a pension measure without GDP in it.
+
+    Spending in euro = % of GDP x nominal GDP; the HICP index is the cumulated annual rate from each country's first year (its level is absorbed by
+    the country effect). For the members outside the euro the euro amount moves with the exchange rate: see NON_EURO."""
+    euro = M["pension_spend_pct_gdp"] / 100 * M["gdp_nominal_meur"] * 1e6
+    elderly = M["population"] * M["wb_pop_65plus_pct"] / 100
+    hicp = np.log1p(M["hicp_inflation"] / 100).groupby(level="iso3").cumsum()
+    return (np.log(euro / elderly) - hicp).rename(PENSION_REAL)
+
+
+def run_pension_real(panel: pd.DataFrame | None = None) -> pd.DataFrame:
+    """E7b (exploratory, added after the results of E7 were seen): the three pension hypotheses with pension spending per person aged 65+ in real
+    euro instead of % of GDP, for all members and for the euro-area members, with and without log real GDP per head as a control."""
+    panel = load_panel() if panel is None else panel
+    M = corr.panel_matrix(panel)
+    M = M.assign(**{PENSION_REAL: pension_real_per_elderly(M), GDP_CONTROL: np.log(M[INCOME])})
+    rows = []
+    for hid, y in PENSION_TESTS:
+        for sample, exclude in (("all members", ()), ("euro area", NON_EURO)):
+            for spec, xs in (("pension % of GDP", ["pension_spend_pct_gdp"]), ("real per person 65+", [PENSION_REAL]), ("real per person 65+, GDP control", [PENSION_REAL, GDP_CONTROL])):
+                r = corr.panel_fe(M, y, xs, exclude=exclude)
+                if r:
+                    rows.append({"id": hid, "y": y, "sample": sample, "spec": spec, "coef": r["coef"][xs[0]], "p": r["p"][xs[0]], "n_obs": r["n_obs"], "n_countries": r["n_countries"]})
+    return pd.DataFrame(rows)
 
 
 def run_lead_lag(panel: pd.DataFrame | None = None, lags=(1, 2, 3)) -> pd.DataFrame:
@@ -165,6 +213,7 @@ def run_all(panel: pd.DataFrame | None = None, out: Path = OUT) -> dict[str, pd.
         "e5_italy_gap_employment": corr.italy_gap_corr(panel, "employment_rate_20_64"),
         "e4_lead_lag": run_lead_lag(panel),
         "e7_hypotheses": run_hypotheses(panel),
+        "e7_pension_real": run_pension_real(panel),
     }
     for name, df in results.items():
         df.to_parquet(out / f"{name}.parquet")

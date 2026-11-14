@@ -226,7 +226,7 @@ EUROSTAT_SPENDING: list[Indicator] = [
 # The 2024 break flag stays: from 2024 the average wage has a new basis (gross euro pay of the average worker: Italy +13%, Germany -7% on 2023), so 2024 onwards is not comparable with 2023 and before (SERIES_BREAKS).
 EXCLUDED_POINTS: dict[tuple[str, int], str] = {}
 # indicator -> first year of a new basis that is not comparable with the years before (never compare or average across it)
-SERIES_BREAKS = {"net_earnings_pps": 2024, "gross_earnings_pps": 2024}
+SERIES_BREAKS = {"net_earnings_pps": 2024, "gross_earnings_pps": 2024, "tax_wedge_low_wage": 2024}  # the three series of the earn_nt tables in the panel
 
 # Higher-education detail tables (extra dimensions kept) -> data/processed/highered.parquet, plus derived rates in the panel
 _FIELDS = ["TOTAL", "F00", "F01", "F02", "F03", "F04", "F05", "F06", "F07", "F08", "F09", "F10"]

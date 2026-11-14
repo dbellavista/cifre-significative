@@ -14,6 +14,7 @@ from cifresignificative.studies.italy_productivity.analysis.data import (
     BENCHMARKS,
     EU27_ISO3,
     ITALY,
+    before_breaks,
 )
 
 COUNTRIES = [*EU27_ISO3, *BENCHMARKS]
@@ -22,8 +23,10 @@ IRELAND = "IRL"  # GDP-type series distorted by multinationals
 
 
 def panel_matrix(panel: pd.DataFrame, drop_flags=BAD_FLAGS, years: tuple[int, int] | None = None, countries=None) -> pd.DataFrame:
-    """(iso3, year) x indicator table; observations carrying a flag in `drop_flags` are dropped, aggregates excluded."""
-    d = panel[panel.iso3.isin(countries or COUNTRIES)]
+    """(iso3, year) x indicator table; observations carrying a flag in `drop_flags` are dropped, aggregates excluded, and so are the years
+    after a series break (`data.before_breaks`: every use of this table compares across years)."""
+    d = before_breaks(panel)
+    d = d[d.iso3.isin(countries or COUNTRIES)]
     if drop_flags:
         d = d[~d.flag.isin(drop_flags)]
     if years:
