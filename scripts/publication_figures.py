@@ -46,6 +46,7 @@ from cifresignificative.studies.italy_productivity.analysis.data import (
     load_sectors64,
     long_wide,
     shift_share,
+    wide,
 )
 from cifresignificative.studies.italy_productivity.analysis.synth import (
     placebo_ratios,
@@ -576,13 +577,61 @@ def cover03(pmr: pd.DataFrame) -> None:
     _cover("03", "Italia a metà classifica", f"Regolamentazione: indice OCSE, {year} (0-6)", [(f"Italia ({int(p['rank'])}ª su {int(p.n_eu)})", p.italy, ITALY_C), (f"Mediana altri {int(p.n_eu) - 1} UE", p.median_others, EU_C)], lambda v: f"{v:.2f}", max(p.italy, p.median_others))
 
 
+def fig04_wages(panel: pd.DataFrame, lh: pd.DataFrame) -> None:
+    """Consumer-price real compensation, with fixed complete EU membership."""
+    comp = long_wide(lh, "comp_per_employee_nominal_th")
+    price = (1 + wide(panel, "hicp_inflation") / 100).cumprod()
+    real = (comp / comp.loc[2005] / (price / price.loc[2005]) * 100).reindex(columns=EU27_ISO3).loc[2005:2025]
+    assert real.notna().all().all(), "Post 04 needs every member in every year"
+    others = real.drop(columns=ITALY)
+    print("04 HICP indices, 2005=100:\n", pd.DataFrame({"Italy": real[ITALY], "median_26": others.median(axis=1)}).loc[[2019, 2021, 2023, 2025]].round(3))
+    print("04 central countries:", others.loc[2025].sort_values().iloc[12:14].to_dict(), "missing: none")
+    fig, ax = plt.subplots(figsize=(5.4, 4.5))
+    for values, label, color in [(real[ITALY], "Italia", ITALY_C), (others.median(axis=1), "Mediana altri 26 UE", EU_C)]:
+        ax.plot(values.index, values, color=color, lw=2.5, label=label)
+    ax.axhline(100, color=INK2, lw=0.8, ls=":")
+    ax.set(title="Compenso reale per dipendente", ylabel="Indice, 2005 = 100", xlim=(2005, 2025), xticks=[2005, 2010, 2015, 2020, 2025])
+    ax.legend(loc="upper left"); fig.tight_layout(); save(fig, "04_compenso_reale")
+    defl = long_wide(lh, "gdp_deflator_2020_100")
+    alternative = comp / comp.loc[2005] / (defl / defl.loc[2005]) * 100
+    check = pd.DataFrame({"HICP": real.loc[2025], "GDP": alternative.loc[2025]}).reindex(EU27_ISO3)
+    print("04 deflators:", check.loc[ITALY].to_dict(), "median", check.drop(ITALY).median().to_dict(), "rank lowest", check.rank().loc[ITALY].to_dict())
+
+
+def fig04_productivity(lh: pd.DataFrame) -> None:
+    """Productivity per hour and per person against real pay (GDP deflator), 2005-2025, Italy, median of the other 26 and three peers."""
+    comp = long_wide(lh, "comp_per_employee_nominal_th") / long_wide(lh, "gdp_deflator_2020_100")
+    hour = long_wide(lh, "gdp_real_per_hour_ncu")
+    person = long_wide(lh, "gdp_real_ncu_bn") / long_wide(lh, "employment_th")
+    hpw = long_wide(lh, "hours_total_m") / long_wide(lh, "employment_th")
+    series = [("Produttività per ora", hour), ("Produttività per occupato", person), ("Compenso reale per dipendente", comp)]
+    for a in (2005, 1995):
+        full = pd.DataFrame({label: (v.loc[2025] / v.loc[a] - 1) * 100 for label, v in series}).reindex(EU27_ISO3)
+        assert full.notna().all().all(), f"Post 04 needs every member for {a}-2025"
+        print(f"04 {a}-2025 percent (n={len(full)}, missing: none):\n", full.loc[["ITA", "DEU", "FRA", "ESP"]].round(3), "\nmedian 26:", full.drop(ITALY).median().round(3).to_dict(), "\nrank lowest ITA:", full.rank().loc[ITALY].to_dict(), "\nthree lowest:", {c: full[c].nsmallest(3).round(1).to_dict() for c in full})
+        print(f"04 hours per worker {a}-2025 percent:", ((hpw.loc[2025] / hpw.loc[a] - 1) * 100).loc[["ITA", "DEU", "FRA", "ESP"]].round(1).to_dict())
+    full = pd.DataFrame({label: (v.loc[2025] / v.loc[2005] - 1) * 100 for label, v in series}).reindex(EU27_ISO3)
+    changes = pd.concat([full.loc[[ITALY]], full.drop(ITALY).median().to_frame("MED").T, full.loc[["DEU", "FRA", "ESP"]]])
+    names = ["Italia", "Mediana altri 26 UE", "Germania", "Francia", "Spagna"]
+    fig, axes = plt.subplots(3, 1, figsize=(5.4, 8.6), sharex=True)
+    for ax, label in zip(axes, changes, strict=True):
+        vals = changes[label]; y = np.arange(len(vals))[::-1]
+        ax.barh(y, vals, color=[ITALY_C, EU_C, PEER_C, PEER_C, PEER_C])
+        ax.set_yticks(y, names); ax.axvline(0, color=INK2, lw=0.8)
+        ax.set_title(label, fontsize=12)
+        for yy, val in zip(y, vals, strict=True):
+            ax.text(max(0, val) + 0.6, yy, f"{val:+.1f}%".replace("-", "−"), va="center", fontsize=11)
+    axes[-1].set(xlabel="Variazione 2005-2025 (%)", xlim=(-10, 36))
+    fig.tight_layout(); save(fig, "04_produttivita")
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("posts", nargs="*", choices=["00", "01", "02", "03"])
+    parser.add_argument("posts", nargs="*", choices=["00", "01", "02", "03", "04"])
     parser.add_argument("--lang", choices=["it", "en"], default="it")
     parser.add_argument("--out", type=Path, help="Override the figure output directory")
     args = parser.parse_args()
-    if args.lang == "en" and (not args.posts or "03" in args.posts):
+    if args.lang == "en" and (not args.posts or "03" in args.posts or "04" in args.posts):
         parser.error("English figures currently support the published posts: specify 00, 01 and/or 02")
     LANG = args.lang
     OUT = args.out or (OUT.parent / "en/figures" if LANG == "en" else OUT)
@@ -603,3 +652,7 @@ if __name__ == "__main__":
     if not only or "03" in only:
         pmr = OR.load_pmr(); d03 = RGL.sector_data(pmr); res03 = RGL.test(d03)
         fig03_position(pmr); fig03_scatter(d03, res03); fig03_italy(RGL.italy_rows(d03)); cover03(pmr)
+
+    if not only or "04" in only:
+        panel, lh = load_panel(), load_long()
+        fig04_wages(panel, lh); fig04_productivity(lh)

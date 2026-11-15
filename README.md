@@ -17,6 +17,7 @@ Un articolo per risultato; i numeri citati si ricalcolano con il codice di quest
 | Cifre significative (Italia) | [Le piccole imprese pesano, ma non spiegano la frenata](https://danielebellavista.substack.com/p/le-piccole-imprese-pesano-ma-non) | `studies/italy_productivity/notebooks/` |
 | Cifre significative (Italia) | [La regolamentazione dei mercati: nessuna conferma dai dati](https://danielebellavista.substack.com/p/la-regolamentazione-dei-mercati-nessuna) | `studies/italy_productivity/notebooks/35_regulation_productivity.ipynb` |
 | Cesena edition | [Cesena cresce? Dipende da cosa misuriamo](https://danielebellavista.substack.com/p/cesena-cresce-dipende-da-cosa-misuriamo) | `studies/cesena/notebooks/` |
+| Cesena edition | [I redditi crescono. E gli stipendi?](https://danielebellavista.substack.com/p/i-redditi-crescono-e-gli-stipendi) | `studies/cesena/notebooks/` |
 
 ## Cosa c'è
 | cartella | contenuto |
