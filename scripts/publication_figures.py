@@ -185,10 +185,12 @@ def _cover(name: str, title: str, subtitle: str, rows: list[tuple[str, float, st
     """Share/preview image 1200x630 that survives landscape, square and 4:5 portrait centre crops: one stacked column inside SAFE_X (title, subtitle, then label, number and bar per row); the drawn text extents are asserted."""
     bg, fg, dim = "#14181f", "#ffffff", "#9aa3b2"; x0, x1 = SAFE_X
     fig = plt.figure(figsize=(12, 6.3), dpi=100, facecolor=bg); ax = fig.add_axes((0, 0, 1, 1)); ax.set_xlim(0, 12); ax.set_ylim(0, 6.3); ax.axis("off")
+    lo = min(0.0, *(v for _, v, _ in rows)); span = scale - lo; zero = x0 + (x1 - x0) * -lo / span  # bars start at zero; a negative value extends left of it
     texts = [ax.text(6, 5.65, textwrap.fill(title, 22), color=fg, fontsize=26, fontweight="bold", ha="center", va="center", linespacing=1.15), ax.text(6, 4.8, textwrap.fill(subtitle, 36), color=dim, fontsize=15, ha="center", va="center")]
     for y, (who, val, col) in zip((3.5, 1.7), rows, strict=True):  # series palette, same as the figures
         texts += [ax.text(x0, y + 0.62, who, color=col, fontsize=22, fontweight="bold", ha="left", va="center"), ax.text(x0, y, text(val), color=col, fontsize=62, fontweight="bold", ha="left", va="center")]
-        ax.barh(y - 0.55, (x1 - x0) * val / scale, left=x0, height=0.22, color=col)
+        ax.barh(y - 0.55, (x1 - x0) * val / span, left=zero, height=0.22, color=col)
+        if lo < 0: ax.plot([zero, zero], [y - 0.75, y - 0.35], color=dim, lw=2)  # zero mark when a value is negative
     texts.append(ax.text(6, 0.3, "Cifre significative", color=dim, fontsize=12, ha="center", va="center"))
     if LANG == "en":
         translate_figure(fig, EN)
@@ -588,14 +590,24 @@ def fig04_wages(panel: pd.DataFrame, lh: pd.DataFrame) -> None:
     print("04 central countries:", others.loc[2025].sort_values().iloc[12:14].to_dict(), "missing: none")
     fig, ax = plt.subplots(figsize=(5.4, 4.5))
     for values, label, color in [(real[ITALY], "Italia", ITALY_C), (others.median(axis=1), "Mediana altri 26 UE", EU_C)]:
-        ax.plot(values.index, values, color=color, lw=2.5, label=label)
+        ax.plot(values.index, values, color=color, lw=2.5, label=label, marker="o", ms=3.5)
+        ax.scatter([2025], [values.loc[2025]], s=60, color=color, zorder=4, edgecolor=SURFACE); ax.annotate(f"{values.loc[2025]:.1f}", (2025, values.loc[2025]), xytext=(6, 0), textcoords="offset points", va="center", ha="left", fontsize=11.5, fontweight="bold", color=color, annotation_clip=False)
     ax.axhline(100, color=INK2, lw=0.8, ls=":")
+    ax.set_xticks(range(2005, 2026), minor=True); ax.grid(axis="x", which="minor", color="#e3e6ea", lw=0.6); ax.grid(axis="x", which="major", color="#c9ced6", lw=0.8)  # one vertical line per year
     ax.set(title="Compenso reale per dipendente", ylabel="Indice, 2005 = 100", xlim=(2005, 2025), xticks=[2005, 2010, 2015, 2020, 2025])
     ax.legend(loc="upper left"); fig.tight_layout(); save(fig, "04_compenso_reale")
     defl = long_wide(lh, "gdp_deflator_2020_100")
     alternative = comp / comp.loc[2005] / (defl / defl.loc[2005]) * 100
     check = pd.DataFrame({"HICP": real.loc[2025], "GDP": alternative.loc[2025]}).reindex(EU27_ISO3)
     print("04 deflators:", check.loc[ITALY].to_dict(), "median", check.drop(ITALY).median().to_dict(), "rank lowest", check.rank().loc[ITALY].to_dict())
+
+
+def cover04(panel: pd.DataFrame, lh: pd.DataFrame) -> None:
+    """Share/preview image 1200x630: consumer-price real compensation per employee 2005-2025, Italy and the median of the other 26 (the opening numbers of the post)."""
+    comp = long_wide(lh, "comp_per_employee_nominal_th"); price = (1 + wide(panel, "hicp_inflation") / 100).cumprod()
+    real = (comp.loc[END] / comp.loc[2005] / (price.loc[END] / price.loc[2005]) * 100 - 100).reindex(EU27_ISO3); assert real.notna().all(), "Post 04 cover needs every member"
+    it, eu = real[ITALY], real.drop(ITALY).median(); print(f"04 cover: Italy {it:+.1f}%, median of the other {len(real) - 1} {eu:+.1f}% (HICP-deflated compensation per employee 2005-{END})")
+    _cover("04", "Compensi reali sotto il 2005", f"Compenso per dipendente tolta l'inflazione, 2005 - {END}", [("Italia", it, ITALY_C), ("Mediana UE", eu, EU_C)], lambda v: f"{v:+.1f}%".replace("-", "−"), eu)
 
 
 def fig04_productivity(lh: pd.DataFrame) -> None:
@@ -655,4 +667,4 @@ if __name__ == "__main__":
 
     if not only or "04" in only:
         panel, lh = load_panel(), load_long()
-        fig04_wages(panel, lh); fig04_productivity(lh)
+        fig04_wages(panel, lh); fig04_productivity(lh); cover04(panel, lh)

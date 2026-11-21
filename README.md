@@ -16,6 +16,7 @@ Un articolo per risultato; i numeri citati si ricalcolano con il codice di quest
 | Cifre significative (Italia) | [Un problema di produttività dentro ogni settore](https://danielebellavista.substack.com/p/un-problema-di-produttivita-dentro) | `studies/italy_productivity/notebooks/` |
 | Cifre significative (Italia) | [Le piccole imprese pesano, ma non spiegano la frenata](https://danielebellavista.substack.com/p/le-piccole-imprese-pesano-ma-non) | `studies/italy_productivity/notebooks/` |
 | Cifre significative (Italia) | [La regolamentazione dei mercati: nessuna conferma dai dati](https://danielebellavista.substack.com/p/la-regolamentazione-dei-mercati-nessuna) | `studies/italy_productivity/notebooks/35_regulation_productivity.ipynb` |
+| Cifre significative (Italia) | [Compensi reali sotto il 2005, produttività ferma](https://danielebellavista.substack.com/p/compensi-reali-sotto-il-2005-produttivita) | `studies/italy_productivity/notebooks/05_education_labour.ipynb`, `17_wages_productivity.ipynb` |
 | Cesena edition | [Cesena cresce? Dipende da cosa misuriamo](https://danielebellavista.substack.com/p/cesena-cresce-dipende-da-cosa-misuriamo) | `studies/cesena/notebooks/` |
 | Significant Figures (Cesena) | [Is Cesena growing? It depends on what we measure.](https://danielebellavista.substack.com/p/is-cesena-growing-it-depends-on-what) | `studies/cesena/notebooks/` |
 | Cesena edition | [I redditi crescono. E gli stipendi?](https://danielebellavista.substack.com/p/i-redditi-crescono-e-gli-stipendi) | `studies/cesena/notebooks/` |
