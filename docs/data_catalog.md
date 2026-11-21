@@ -246,7 +246,7 @@ Provenance of every download (URL, source update date, timestamp) is in `data/ra
 | net_migration_rate_per_1000 | migration | Eurostat `demo_gind` | indic_de=CNMIGRATRT | crude net migration rate incl. statistical adjustment | 29 geos, 2005-2025; Italy 2005-2025 |
 | net_migration_registered_per_1000 | migration | eurostat:migr_imm8/migr_emi2 (derived) |  | derived in clean/build.py | 29 geos, 2005-2024; Italy 2005-2024 |
 | ameco_output_gap_pct_potential | output | AMECO `AVGDGP` |  |  | 30 geos, 2005-2025; Italy 2005-2025 |
-| ameco_tfp_index | output | AMECO `ZVGDF` |  |  | 31 geos, 2005-2025; Italy 2005-2025 |
+| ameco_tfp_index | output | AMECO `ZVGDF` |  |  | 30 geos, 2005-2025; Italy 2005-2025 |
 | gdp_growth | output | Eurostat `nama_10_gdp` | na_item=B1GQ, unit=CLV_PCH_PRE | real growth % | 28 geos, 2005-2025; Italy 2005-2025 |
 | gdp_nominal_meur | output | Eurostat `nama_10_gdp` | na_item=B1GQ, unit=CP_MEUR | current prices, EUR million | 28 geos, 2005-2025; Italy 2005-2025 |
 | gdp_pps_pc_eu27 | output | Eurostat `nama_10_pc` | na_item=B1GQ, unit=PC_EU27_2020_HAB_MEUR_CP | index EU27=100 | 28 geos, 2005-2025; Italy 2005-2025 |

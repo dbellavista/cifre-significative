@@ -304,8 +304,9 @@ def test_ameco_series_cover_every_member(panel):
     from cifresignificative.core.countries import EU27
 
     members = set(EU27.values())
+    absent_at_source = {"ameco_tfp_index": {"DNK"}}  # the autumn 2026 edition (16 Nov 2026) has no DNK ZVGDF row at all; the spring edition had one
     for ind, sub in panel[panel.source.str.startswith("ameco:")].groupby("indicator"):
-        missing = members - set(sub.iso3)
+        missing = members - set(sub.iso3) - absent_at_source.get(ind, set())
         assert not missing, f"{ind} has no AMECO values for {sorted(missing)}"
 
 

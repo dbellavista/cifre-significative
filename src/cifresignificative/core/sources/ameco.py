@@ -1,4 +1,4 @@
-"""AMECO (European Commission DG ECFIN) bulk CSV: TFP, hours, compensation, output gap."""
+"""AMECO (European Commission DG ECFIN) bulk download: TFP, hours, compensation, output gap."""
 import io
 import zipfile
 from pathlib import Path
@@ -12,8 +12,9 @@ from cifresignificative.core.sources._common import record
 
 truststore.inject_into_ssl()
 
-URL = "https://ec.europa.eu/economy_finance/db_indicators/ameco/documents/ameco0_CSV.zip"
-RAW = Path("data/raw/ameco/ameco0_CSV.zip")
+# ameco0.zip (semicolon-separated .TXT) is the file updated with each forecast; ameco0_CSV.zip lagged behind (still the spring 2026 edition after the autumn release of 16 November 2026)
+URL = "https://ec.europa.eu/economy_finance/db_indicators/ameco/documents/ameco0.zip"
+RAW = Path("data/raw/ameco/ameco0.zip")
 
 # panel name -> (AMECO variable suffix, theme)
 SERIES = {
@@ -32,7 +33,7 @@ def fetch(force: bool = False) -> Path:
     resp = requests.get(URL, timeout=300)
     resp.raise_for_status()
     RAW.write_bytes(resp.content)
-    record("ameco", source="ameco", dataset="ameco0_CSV", url=URL)
+    record("ameco", source="ameco", dataset="ameco0", url=URL)
     return RAW
 
 
@@ -40,8 +41,10 @@ def _read_all() -> pd.DataFrame:
     frames = []
     with zipfile.ZipFile(RAW) as zf:
         for member in zf.namelist():
-            if member.upper().endswith(".CSV"):
-                frames.append(pd.read_csv(io.BytesIO(zf.read(member)), dtype=str, encoding_errors="replace"))
+            if member.upper().endswith((".TXT", ".CSV")):
+                d = pd.read_csv(io.BytesIO(zf.read(member)), sep=";" if member.upper().endswith(".TXT") else ",", dtype=str, encoding_errors="replace")
+                d.columns = [c.strip() for c in d.columns]
+                frames.append(d.assign(CODE=d["CODE"].str.strip()))
     return pd.concat(frames, ignore_index=True)
 
 
