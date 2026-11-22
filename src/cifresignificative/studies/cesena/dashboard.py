@@ -863,8 +863,8 @@ def view_outcomes(panel: pd.DataFrame) -> None:
 
     st.markdown(
         tr(
-            "**Hypothesis, not a result:** the towns around Cesena are mostly cheaper, but among them cheaper towns grew less, and no data here show who moves or from where. See findings 8 and 15 and research track R2.",
-            "**Ipotesi, non un risultato:** i comuni intorno a Cesena sono per lo più meno cari, ma tra questi i meno cari sono cresciuti meno, e questi dati non mostrano chi si sposta né da dove. Vedi i risultati 8 e 15 e la linea di ricerca R2.",
+            "**Hypothesis, not a result:** the towns around Cesena are mostly cheaper, and cheaper housing does not go with faster growth among them (the opposite pattern is fragile: it is much weaker without Valle del Savio and does not survive FDR correction); no data here show who moves or from where. See findings 8 and 15 and research track R2.",
+            "**Ipotesi, non un risultato:** i comuni intorno a Cesena sono per lo più meno cari, e tra questi case meno care non si associano a una crescita maggiore (il legame opposto è fragile: si indebolisce molto senza la Valle del Savio e non regge alla correzione FDR); questi dati non mostrano chi si sposta né da dove. Vedi i risultati 8 e 15 e la linea di ricerca R2.",
         )
     )
 

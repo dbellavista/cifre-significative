@@ -6,12 +6,22 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
+from scipy import stats
 
 from cifresignificative.core.geo import CESENA, CORE_PEER_IDS
+from cifresignificative.core.sources import inps_osservatorio
 from cifresignificative.studies.cesena.analysis.economy import sector_size_swing
 from cifresignificative.studies.cesena.analysis.fiscal import (
     compare_fiscal_regimes,
     mission_allocation_summary,
+)
+from cifresignificative.studies.cesena.analysis.hours import (
+    ER_PROVINCES,
+    UNIT,
+    comparable_provinces,
+    mix_decomposition,
+    province_panel,
+    unit_vs_others,
 )
 from cifresignificative.studies.cesena.analysis.income_followup import component_changes
 from cifresignificative.studies.cesena.analysis.investments import (
@@ -523,6 +533,7 @@ def _outcomes(c: _Claims, p: Path) -> None:
     c.add("belt_growth_0811_share", early, share(early, 0), "04", "2008-2011 of 2008-2024", src)
     v = pb.loc[("belt_16", 2012, 2018), "pop_change"] + pb.loc[("belt_16", 2019, 2024), "pop_change"]
     c.add("belt_growth_1224", v, signed(v, 0), "04", "2012-2024", src)
+    _population_detail(c, p, pb)
 
     pl = pd.read_parquet(p / "placebo_ranking.parquet").set_index("metric")
     src = "placebo_ranking.parquet"
@@ -597,6 +608,71 @@ def _outcomes(c: _Claims, p: Path) -> None:
     c.add("commute_students_belt", stud, share(stud, 0), "04", "2011 census", src)
 
 
+def _population_detail(c: _Claims, p: Path, pb: pd.DataFrame) -> None:
+    """What the 2008-2024 headline hides: periods, groups of towns, start year, the comparison with cities and the fragility of the price gradient. All per thousand residents of 2008, so periods add up."""
+    demo, belt = pd.read_parquet(p / "demography.parquet"), pd.read_parquet(p / "belt_comuni.parquet")
+    # belt_comuni has no births or deaths for Cesena itself
+    areas = {"cesena": demo[demo["comune_id"] == CESENA], "belt_16": belt[belt["comune_id"] != CESENA]}
+    flows = {a: d.groupby("year")[["pop_total", "births", "deaths", "net_migration"]].sum() for a, d in areas.items()}
+    for area, f in flows.items():
+        for col in ("births", "deaths"):
+            v = f.loc[2008:2024, col].sum() / f.loc[2008, "pop_total"] * 1000
+            c.add(f"{col}_0824_{area}", v, f"{v:.1f}", "04", "2008-2024", "demography.parquet, belt_comuni.parquet")
+
+    src = "population_balance.parquet"
+    cols = {"natural": ["natural_balance"], "migration": ["net_migration_internal", "net_migration_international"], "adjustment": ["registry_adjustment"], "total": ["pop_change"]}
+    for tag, periods in (("0811", [(2008, 2011)]), ("1224", [(2012, 2018), (2019, 2024)])):
+        window = "2008-2011" if tag == "0811" else "2012-2024"
+        for name, cc in cols.items():
+            val = {a: sum(pb.loc[(a, t0, t1), cc].sum() for t0, t1 in periods) / pb.loc[(a, 2008, 2024), "pop_start"] * 1000 for a in flows}
+            c.add(f"gap_{tag}_{name}", val["belt_16"] - val["cesena"], signed(val["belt_16"] - val["cesena"]), "04", window, src)
+            if tag == "1224" and name == "migration":
+                for a in flows:
+                    c.add(f"migration_1224_{a}", val[a], signed(val[a]), "04", window, src)
+    for g, short in (("rubicone_mare", "rubicone"), ("via_emilia_west", "emilia"), ("unione_valle_savio", "savio")):
+        r = pb.loc[(g, 2008, 2024)]
+        for name, cc in (*cols.items(), ("internal", ["net_migration_internal"]), ("abroad", ["net_migration_international"])):
+            v = r[cc].sum() / r["pop_start"] * 1000
+            c.add(f"balance_{name}_{short}", v, signed(v), "04", "2008-2024", src)
+
+    rate = {a: {y: f.loc[y:2024, "net_migration"].sum() / f.loc[y, "pop_total"] for y in range(2008, 2021)} for a, f in flows.items()}
+    ahead = [y for y in range(2008, 2021) if rate["cesena"][y] > rate["belt_16"][y]]
+    c.add("migration_start_years_ahead", len(ahead), ", ".join(map(str, ahead)), "04", "start years 2008-2020, end 2024", "demography.parquet, belt_comuni.parquet")
+
+    base = demo[demo["year"] == 2008].set_index("comune_id")["pop_total"]
+    city = demo[demo["year"].between(2008, 2024)].groupby("comune_id")[["natural_balance", "net_migration"]].sum().div(base, axis=0)
+    growth = demo[demo["year"] == 2025].set_index("comune_id")["pop_total"] / base
+    faster = growth[growth > growth[CESENA]].index
+    diff = city.loc[faster] - city.loc[CESENA]
+    n = int((diff["net_migration"] > diff["natural_balance"]).sum())
+    c.add("cities_migration_over_natural", n, f"{n} of {len(faster)}", "04", "2008-2024, cities growing faster than Cesena", "demography.parquet")
+
+    om = pd.read_parquet(p / "omi_quotations_municipal.parquet")
+    towns = om[~om["is_er_peer"] & ~om["is_cesena"]].set_index("comune_id")
+    cheaper = int((towns["diff_vs_cesena_pct"] < 0).sum())
+    c.add("omi_towns_cheaper", cheaper, f"{cheaper} of {len(towns)}", "04", "OMI quotations", "omi_quotations_municipal.parquet")
+    valley = towns[towns["belt_group"] == "unione_valle_savio"]
+    dearer = int((valley["compr_mid_eur_m2"] > towns.loc["040004", "compr_mid_eur_m2"]).sum())  # Borghi: cheap, yet the highest net migration
+    c.add("omi_savio_dearer_than_borghi", dearer, f"{dearer} of {len(valley)}", "04", "OMI quotations", "omi_quotations_municipal.parquet")
+    b = belt[belt["comune_id"] != CESENA]
+    moved = b[b["year"].between(2008, 2024)].groupby("comune_id")["net_migration"].sum() / b[b["year"] == 2008].set_index("comune_id")["pop_total"] * 1000
+    c.add("migration_borghi", moved["040004"], signed(moved["040004"]), "04", "2008-2024", "belt_comuni.parquet", *_rank(moved, "040004"))
+    flat = towns[towns["belt_group"] != "unione_valle_savio"]
+    pop = belt.pivot_table(index="comune_id", columns="year", values="pop_total")
+    for t0, t1 in ((2008, 2025), (2012, 2024)):  # both windows quoted for the 16 towns
+        cid, window = f"gradient_belt_{str(t0)[2:]}{str(t1)[2:]}_ex_savio", f"{t0}-{t1}, without Valle del Savio"
+        rho, pval = stats.spearmanr(flat["compr_mid_eur_m2"], (pop[t1] / pop[t0]).reindex(flat.index))
+        c.add(cid, rho, f"{rho:+.2f}", "04", window, "omi_quotations_municipal.parquet")
+        c.add(f"{cid}_p", pval, f"{pval:.2f}", "04", window, "omi_quotations_municipal.parquet")
+    q = stats.false_discovery_control(pd.read_parquet(p / "housing_gradient_test.parquet")["p"]).min()
+    c.add("gradient_min_q", q, f"{q:.3f}", "04", "BH over the price gradient tests", "housing_gradient_test.parquet")
+
+    cm = pd.read_parquet(p / "commuting_belt_corridors.parquet").set_index("partner_id")["inbound_to_cesena"]
+    out = cm.loc[["040012", "039007", "039014"]].sum()  # Forlì, Cervia, Ravenna: the largest origins outside the 16 towns
+    c.add("commute_top3_outside", out, num(out, 0), "04", "2011 census", "commuting_belt_corridors.parquet")
+    c.add("commute_top3_outside_share", out / cm.sum() * 100, share(out / cm.sum() * 100, 0), "04", "2011 census", "commuting_belt_corridors.parquet")
+
+
 def _evaluation(c: _Claims, p: Path) -> None:
     ex = pd.read_parquet(p / "extended_placebo_ranking.parquet").set_index(["pool_key", "metric"])
     src = "extended_placebo_ranking.parquet"
@@ -664,6 +740,33 @@ def _evaluation(c: _Claims, p: Path) -> None:
     c.add("flood_emp_x10_unlisted", tier.loc["not_listed", "emp_growth_x10_22_24_pct"], pct(tier.loc["not_listed", "emp_growth_x10_22_24_pct"]), "05", "2022-2024", src)
 
 
+def _hours(c: _Claims, p: Path) -> None:
+    """Notebook 06: INPS private-sector employees of Forlì-Cesena, part-time and paid days. Computed from the raw exports; skipped when they are absent."""
+    if not list(inps_osservatorio.RAW.glob(inps_osservatorio.GLOB)):
+        return
+    panel = province_panel(inps_osservatorio.load())
+    src = "data/raw/inps_osservatorio (INPS Osservatorio lavoratori dipendenti)"
+    for y1 in (2024, 2018):
+        keep = comparable_provinces(panel, (2008, y1))
+        dec = mix_decomposition(panel, 2008, y1, keep)
+        r = unit_vs_others(dec)
+        er = unit_vs_others(dec, others=[x for x in ER_PROVINCES if x in dec.index])
+        w, t = f"2008-{y1}", str(y1)[2:]
+        for col, cid, f in [("share_pt_change_pp", "share", pp), ("days_per_worker_change_pct", "days", pct), ("pay_per_day_change_pct", "payday", pct), ("pay_per_worker_change_pct", "payworker", pct), ("within_pct", "within", pct), ("mix_pct", "mix", pct)]:
+            c.add(f"hours_{cid}_08{t}", r.loc[col, "unit"], f(float(r.loc[col, "unit"])), "06", w, src, int(r.loc[col, "rank"]), int(r.loc[col, "n_others"]) + 1)
+            c.add(f"hours_{cid}_08{t}_others", r.loc[col, "median_others"], f(float(r.loc[col, "median_others"])), "06", w, src)
+        c.add(f"hours_mix_08{t}_er", er.loc["mix_pct", "median_others"], pct(float(er.loc["mix_pct", "median_others"])), "06", w, src, int(er.loc["mix_pct", "rank"]), int(er.loc["mix_pct", "n_others"]) + 1)
+        c.add(f"hours_share_08{t}_er", er.loc["share_pt_change_pp", "median_others"], pp(float(er.loc["share_pt_change_pp", "median_others"])), "06", w, src)
+    a, b = panel.loc[(2008, UNIT)], panel.loc[(2024, UNIT)]
+    c.add("hours_share_0", a.share_pt_pct, share(a.share_pt_pct), "06", "2008", src)
+    c.add("hours_share_1", b.share_pt_pct, share(b.share_pt_pct), "06", "2024", src)
+    c.add("hours_dpw_0", a.days_per_worker, num(a.days_per_worker), "06", "2008", src)
+    c.add("hours_dpw_1", b.days_per_worker, num(b.days_per_worker), "06", "2024", src)
+    c.add("hours_ptratio_1", b.pt_pay_per_day_ratio, share(b.pt_pay_per_day_ratio * 100, 0), "06", "2024", src)
+    c.add("hours_workers_0", a.workers, num(a.workers, 0), "06", "2008", src)
+    c.add("hours_workers_1", b.workers, num(b.workers, 0), "06", "2024", src)
+
+
 def income_followup_claims(components: pd.DataFrame, deflator: pd.Series) -> pd.DataFrame:
     """Quoted source comparisons for article 01, on an explicitly supplied price basis."""
     values = component_changes(components, deflator)
@@ -674,7 +777,7 @@ def income_followup_claims(components: pd.DataFrame, deflator: pd.Series) -> pd.
 def build_claims(processed_dir: Path = PROCESSED_DIR, write: bool = True) -> pd.DataFrame:
     """Compute all quoted figures; `id` is unique and `text` is the exact string `findings.md` must show."""
     c = _Claims()
-    for part in (_fiscal, _investments, _economy, _outcomes, _evaluation):
+    for part in (_fiscal, _investments, _economy, _outcomes, _evaluation, _hours):
         part(c, processed_dir)
     out = pd.DataFrame(c.rows)
     if out["id"].duplicated().any():

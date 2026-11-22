@@ -22,5 +22,6 @@ for _name in [
     "03_real_economy_shift_share",
     "04_income_demography",
     "05_policy_evaluation",
+    "06_hours",
 ]:
     importlib.import_module(f"{__name__}.n{_name}")

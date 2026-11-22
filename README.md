@@ -21,6 +21,7 @@ Un articolo per risultato; i numeri citati si ricalcolano con il codice di quest
 | Cesena edition | [Cesena cresce? Dipende da cosa misuriamo](https://danielebellavista.substack.com/p/cesena-cresce-dipende-da-cosa-misuriamo) | `studies/cesena/notebooks/` |
 | Significant Figures (Cesena) | [Is Cesena growing? It depends on what we measure.](https://danielebellavista.substack.com/p/is-cesena-growing-it-depends-on-what) | `studies/cesena/notebooks/` |
 | Cesena edition | [I redditi crescono. E gli stipendi?](https://danielebellavista.substack.com/p/i-redditi-crescono-e-gli-stipendi) | `studies/cesena/notebooks/` |
+| Cesena edition | [Perché Cesena cresce meno dei comuni vicini](https://danielebellavista.substack.com/p/perche-cesena-cresce-meno-dei-comuni) | `studies/cesena/notebooks/04_income_demography.ipynb` |
 
 ## Cosa c'è
 | cartella | contenuto |
@@ -28,7 +29,7 @@ Un articolo per risultato; i numeri citati si ricalcolano con il codice di quest
 | `src/cifresignificative/` | pipeline (scarico, pulizia), analisi e cruscotto Streamlit |
 | `studies/italy_productivity/notebooks/` | 42 notebook eseguiti, con i risultati e le note a margine |
 | `studies/italy_productivity/reports/findings.md` | sintesi dei risultati con numeri e limiti; i grafici sono in `studies/italy_productivity/reports/figures/` |
-| `studies/cesena/` | studio su Cesena: 5 notebook eseguiti, `reports/findings.md` (risultati con numeri e limiti), README con fonti e insidie, `reports/income_evidence/` (tabelle dei redditi usate nel post di lancio) |
+| `studies/cesena/` | studio su Cesena: 6 notebook eseguiti, `reports/findings.md` (risultati con numeri e limiti), README con fonti e insidie, `reports/income_evidence/` (tabelle dei redditi usate nel post di lancio) |
 | `docs/` | metodologia, schema dei dati, catalogo degli indicatori, quadro delle analisi |
 | `data/external/*.csv` | tabelle curate a mano (governi, politiche, glossario, tabelle compilate da fonti aperte) |
 | `tests/` | test della pipeline e dei metodi statistici |
