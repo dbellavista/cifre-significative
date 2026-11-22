@@ -21,6 +21,7 @@ Un articolo per risultato; i numeri citati si ricalcolano con il codice di quest
 | Cesena edition | [Cesena cresce? Dipende da cosa misuriamo](https://danielebellavista.substack.com/p/cesena-cresce-dipende-da-cosa-misuriamo) | `studies/cesena/notebooks/` |
 | Significant Figures (Cesena) | [Is Cesena growing? It depends on what we measure.](https://danielebellavista.substack.com/p/is-cesena-growing-it-depends-on-what) | `studies/cesena/notebooks/` |
 | Cesena edition | [I redditi crescono. E gli stipendi?](https://danielebellavista.substack.com/p/i-redditi-crescono-e-gli-stipendi) | `studies/cesena/notebooks/` |
+| Significant Figures (Cesena) | [Incomes are rising. What about wages?](https://danielebellavista.substack.com/p/cesena-incomes-are-rising-what-about) | `studies/cesena/notebooks/` |
 | Cesena edition | [Perché Cesena cresce meno dei comuni vicini](https://danielebellavista.substack.com/p/perche-cesena-cresce-meno-dei-comuni) | `studies/cesena/notebooks/04_income_demography.ipynb` |
 
 ## Cosa c'è
