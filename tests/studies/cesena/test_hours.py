@@ -31,6 +31,19 @@ def test_decomposition_is_exact_and_signs_planted():
     assert (1 + dec.within_pct / 100) * (1 + dec.mix_pct / 100) == pytest.approx(1 + dec.pay_per_worker_change_pct / 100)
 
 
+def test_real_changes_deflate_and_keep_identity():
+    # No pay +20%, Si pay +20%, share fixed; prices +20%: real changes are zero, mix is zero
+    spec = {(2008, "A"): (80, 80 * 30000, 80 * 250, 20, 20 * 12000, 20 * 210), (2024, "A"): (80, 80 * 36000, 80 * 250, 20, 20 * 14400, 20 * 210)}
+    p = hours.province_panel(_long(spec))
+    r = hours.real_pay_changes(p, 2008, 2024, pd.Series({2008: 1.0, 2024: 1.2})).loc["A"]
+    for c in ("pay_per_worker_real_pct", "within_real_pct", "mix_pct", "pay_per_worker_no_real_pct", "pay_per_worker_si_real_pct", "days_per_worker_no_change_pct"):
+        assert r[c] == pytest.approx(0, abs=1e-9)
+    spec[(2024, "A")] = (60, 60 * 33000, 60 * 252, 40, 40 * 13000, 40 * 215)
+    r = hours.real_pay_changes(hours.province_panel(_long(spec)), 2008, 2024, pd.Series({2008: 1.0, 2024: 1.2})).loc["A"]
+    assert (1 + r.within_real_pct / 100) * (1 + r.mix_pct / 100) == pytest.approx(1 + r.pay_per_worker_real_pct / 100)
+    assert r.pay_per_worker_no_real_pct == pytest.approx((33000 / 30000 / 1.2 - 1) * 100)
+
+
 def test_panel_rejects_inconsistent_totals():
     d = _long({(2008, "A"): (80, 1000, 100, 20, 500, 50)})
     d.loc[(d.part_time == "Totale"), "workers"] += 1
@@ -58,3 +71,31 @@ def test_real_data_unit_present():
     keep = hours.comparable_provinces(p, (2008, 2024))
     dec = hours.mix_decomposition(p, 2008, 2024, keep)
     assert hours.UNIT in dec.index and len(dec) > 80 and np.isfinite(dec.mix_pct).all() and (dec.mix_pct < 0).all()
+
+
+def test_totals_growth_identity_and_masked_provinces_dropped():
+    t = pd.DataFrame({"year": [2019, 2020] * 3, "province": ["A", "A", "B", "B", "C", "C"], "kind": "province",
+                      "workers": [100, 90, 50, 50, 10, 10], "pay_eur": [3000, 2400, 1000, 1100, 100, 100], "paid_days": [25000, 21600, 12000, 12000, 2000, 2000],
+                      "masked_cells": [0, 0, 0, 0, 1, 0]})
+    p = hours.totals_panel(t)
+    assert set(p.index.get_level_values("province")) == {"A", "B"}  # C has a hidden section in 2019
+    g = hours.totals_growth(p, 2019, 2020)
+    assert g.loc["A", "workers_change_pct"] == pytest.approx(-10)
+    assert np.allclose((1 + g.days_per_worker_change_pct / 100) * (1 + g.pay_per_day_change_pct / 100), 1 + g.pay_per_worker_change_pct / 100)
+
+
+def test_real_totals_cover_2019_2025_when_present():
+    if not list(inps.RAW.glob(inps.GLOB)):
+        pytest.skip("INPS exports not in data/raw/inps_osservatorio")
+    p = hours.totals_panel(inps.load_totals())
+    g = hours.totals_growth(p, 2019, 2020, hours.comparable_provinces(p, (2019, 2020)))
+    assert hours.UNIT in g.index and len(g) > 80 and g.workers_change_pct.loc[hours.UNIT] == pytest.approx((116575 / 120305 - 1) * 100)
+
+
+def test_working_time_panel_shares_and_change():
+    w = pd.DataFrame({"year": [2019, 2025] * 2, "province": ["A", "A", "B", "B"], "kind": "province", "Totale": [100, 120, 50, 50], "part_time": [30, 30, 10, 10],
+                      "part_time_share_pct": [30, 25, 20, 20], "Tempo parziale orizzontale": [25, 25, 8, 8], "Tempo parziale verticale": [2, 2, 1, 1], "Tempo parziale misto": [3, 3, 1, 1]})
+    p = hours.working_time_panel(w)
+    ch = hours.working_time_change(p, 2019, 2025)
+    assert ch.loc["A", "share_change_pp"] == -5 and ch.loc["A", "workers_month_change_pct"] == pytest.approx(20) and ch.loc["B", "share_change_pp"] == 0
+    assert p.loc[(2019, "A"), "share_horizontal_pct"] == 25

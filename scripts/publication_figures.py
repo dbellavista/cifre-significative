@@ -637,13 +637,166 @@ def fig04_productivity(lh: pd.DataFrame) -> None:
     fig.tight_layout(); save(fig, "04_produttivita")
 
 
+SECT05 = {"goods": ("Industria e agricoltura", ITALY_C), "services": ("Servizi privati", EU_C), "all-items": ("Pubblico", "#5d6470")}  # sector of a leaf group (`contracts.deflator_of`: all-items = public groups)
+EX05 = {"Z0800": "Meccanica generale", "Z1260": "Commercio"}  # the two staircases of figure 1: a renewed agreement with yearly June steps and an expired one
+
+
+def data05() -> dict:
+    """Notebook 39 tables for post 05 (Istat contractual wages by agreement group, December 2021 to December 2024/25), with the sector of every leaf and parent group."""
+    from cifresignificative.core.sources import istat_contracts as IC
+    from cifresignificative.studies.italy_productivity.analysis import contracts as CT
+    from cifresignificative.studies.italy_productivity.analysis.experiments import (
+        run_contracts_all,
+    )
+    from cifresignificative.studies.italy_productivity.analysis.hf import load_highfreq
+    groups = IC.load_groups(); cres = run_contracts_all(); sector = CT.deflator_of(groups)
+    lv = cres["c1_leaf_groups"].set_index("group"); lv = lv.assign(sector=sector.reindex(lv.index), name=groups.set_index("code").name_it.reindex(lv.index))
+    clu = cres["c12_clusters"].set_index("group").join(lv.groupby("parent").sector.first())
+    dec = CT.december_inflation(load_highfreq()); infl = {e: CT.cumulative_inflation(dec, 2021, e) for e in (2024, 2025)}
+    agg = cres["c10_aggregates"].set_index(["end", "group"])
+    print(f"05 leaves: {len(lv)} ({lv.branch.value_counts().to_dict()}), losing to 2024 {int((lv.real_change < 0).sum())}, to 2025 {int((lv.real_change_25 < 0).sum())}; median nominal {lv.nominal_change.median():.2f}, real {lv.real_change.median():.2f} (2025 {lv.real_change_25.median():.2f}); range {lv.real_change.min():.2f} to {lv.real_change.max():.2f}")
+    print("05 medians by branch:", lv.groupby("branch")[["nominal_change", "real_change", "staleness_months"]].median().round(2).to_dict())
+    print("05 leaves by sector (n, losing, median real 2024):", {k: (len(v), int((v.real_change < 0).sum()), round(float(v.real_change.median()), 2)) for k, v in lv.groupby("sector")})
+    print("05 zero nominal change to 2024:", lv[lv.nominal_change == 0].name.tolist())
+    print("05 parents by sector (n, mean staleness, mean real 2024):", {k: (len(v), round(float(v.staleness_months.mean()), 1), round(float(v.real_change.mean()), 2)) for k, v in clu.groupby("sector")})
+    print(f"05 inflation Dec-Dec {dec.loc[2021:2025].round(1).to_dict()}, cumulative 2021-24 {infl[2024]:.2f}, 2021-25 {infl[2025]:.2f}")
+    print("05 aggregates:\n", agg[["name_en", "nominal_change", "real_change"]].round(2).to_string())
+    for c in ("c2_cluster_family", "c7_placebo_2016_19", "c21_sector_deflator_proxy", "c24_proxy_within_sector", "c36_weighted_proxy_all", "c41_weighted_variants"):
+        t = cres[c]; print(f"05 {c}:\n", t[[k for k in ("level", "family", "parent_mean", "year", "extended", "x", "y", "n", "n_eff", "rho", "rho_weighted", "p", "q_value") if k in t]].round(3).to_string())
+    print("05 weighted summary (all employees):\n", cres["c34_weighted_summary_all"].round(3).to_string())
+    return {"lv": lv, "clu": clu, "dec": dec, "infl": infl, "agg": agg, "wages": IC.load_wages(), "tension": IC.load_tension(), "cres": cres}
+
+
+def fig05_steps(d: dict) -> None:
+    """Two real staircases (index December 2021 = 100) against consumer prices at each December: increments arrive when an agreement is renewed."""
+    w = d["wages"]; ix = w[w.group.isin(list(EX05))].pivot(index="month", columns="group", values="index").loc["2021-06":"2025-12"]
+    ix = ix / ix.loc["2021-12-31"] * 100; price = pd.Series({pd.Timestamp(f"{y}-12-31"): 100 * np.prod([1 + d["dec"][k] / 100 for k in range(2022, y + 1)]) for y in range(2021, 2026)})
+    print("05 steps, December values:\n", pd.concat([ix[ix.index.month == 12], price.rename("prices")], axis=1).round(1).to_string())
+    fig, ax = plt.subplots(figsize=(5.4, 4.6))
+    ax.plot(price.index, price, color=INK2, lw=1.6, ls="--", marker="o", ms=5, zorder=2)
+    for (g, lab), col in zip(EX05.items(), (ITALY_C, EU_C), strict=True):
+        ax.step(ix.index, ix[g], where="post", color=col, lw=2.6, zorder=3)
+        ax.annotate(lab, (ix.index[-1], ix[g].iloc[-1]), xytext=(4, 0), textcoords="offset points", va="center", fontsize=11, fontweight="bold", color=col, annotation_clip=False)
+    ax.annotate("Prezzi al\nconsumo", (price.index[1], price.iloc[1]), xytext=(-10, -4), textcoords="offset points", va="top", ha="right", fontsize=11, fontweight="bold", color=INK2)
+    ax.axhline(100, color=INK2, lw=0.8, ls=":"); ax.set(ylabel="Indice, dicembre 2021 = 100", ylim=(97, 119))
+    ax.set_xticks([pd.Timestamp(f"{y}-01-01") for y in range(2022, 2026)], [str(y) for y in range(2022, 2026)])
+    ax.set_title("Salario contrattuale orario, due contratti\nprezzi al consumo: valori di dicembre", fontsize=12.5); fig.tight_layout(); save(fig, "05_scalini")
+
+
+def fig05_groups(d: dict) -> None:
+    """Every leaf agreement group: real change of the contractual wage December 2021 to December 2024, one row per sector, with the sector median."""
+    lv = d["lv"]; rng = np.random.default_rng(0)
+    fig, ax = plt.subplots(figsize=(5.4, 4.4))
+    for i, (k, (lab, col)) in enumerate(SECT05.items()):
+        s = lv[lv.sector == k].real_change; y = 2 - i
+        ax.scatter(s, y + rng.uniform(-0.22, 0.22, len(s)), s=34, color=col, alpha=0.85, edgecolor=SURFACE, lw=0.5, zorder=3)
+        ax.plot([s.median()] * 2, [y - 0.36, y + 0.36], color=INK, lw=2.2, zorder=4)
+        ax.text(-15.6, y + 0.43, f"{lab}: {int((s < 0).sum())} su {len(s)} in perdita, mediana {s.median():+.1f}%".replace("-", "−").replace(".", ".", 1), fontsize=10.5, color=col, fontweight="bold", va="bottom")
+    ax.axvline(0, color=INK, lw=1.0); ax.set(xlim=(-16, 7), ylim=(-0.6, 2.9), xlabel="Variazione reale 2021-2024 (%)"); ax.set_yticks([]); ax.grid(axis="y", visible=False)
+    ax.set_title(f"{len(lv)} gruppi contrattuali: {int((lv.real_change < 0).sum())} hanno perso", fontsize=12.5); fig.tight_layout(); save(fig, "05_gruppi")
+
+
+def fig05_waiting(d: dict) -> None:
+    """Monthly inflation and the months private-sector employees waited for a renewal (averaged over all employees), the 2015 and 2021 bases side by side, not spliced."""
+    from cifresignificative.studies.italy_productivity.analysis.hf import load_highfreq
+    hf = load_highfreq(); infl = hf[(hf.iso3 == ITALY) & (hf.indicator == "m_hicp_inflation")].set_index("date").value.loc["2015-01":]
+    t = d["tension"]; t = t[(t.indicator == "months_all") & (t.sector == "private sector")]
+    old, new = t[(t.base == "2015") & (t.month < "2021-01-01")].set_index("month").value, t[t.base == "2021"].set_index("month").value
+    print("05 waiting, private sector, December values:", pd.concat([old, new])[lambda s: s.index.month == 12].round(1).to_dict(), "| last:", new.index[-1].date(), round(float(new.iloc[-1]), 1))
+    fig, (a1, a2) = plt.subplots(2, 1, figsize=(5.4, 5.6), sharex=True, gridspec_kw={"height_ratios": [1, 1.4]})
+    a1.fill_between(infl.index, infl, color=EU_C, alpha=0.35, lw=0); a1.plot(infl.index, infl, color=EU_C, lw=1.6); a1.axhline(0, color=INK2, lw=0.8)
+    a1.set_title("Inflazione, % sullo stesso mese dell'anno prima", fontsize=12); a1.set_ylim(-1, 14)
+    for s in (old, new): a2.plot(s.index, s, color=ITALY_C, lw=2.2)
+    a2.axvline(pd.Timestamp("2021-01-01"), color=INK2, lw=0.8, ls=":"); a2.text(pd.Timestamp("2021-02-01"), 22.5, "nuova base\nIstat", fontsize=9.5, color=INK2, va="top")
+    a2.set_title("Settore privato: mesi di attesa del rinnovo,\nmedia su tutti i dipendenti", fontsize=12); a2.set_ylim(0, 23); a2.set_ylabel("Mesi")
+    fig.tight_layout(); save(fig, "05_attese")
+
+
+def fig05_age(d: dict) -> None:
+    """The 30 parent groups: months since the last increment at December 2021 against the real change to December 2024, coloured by sector."""
+    c = d["clu"]
+    fig, ax = plt.subplots(figsize=(5.4, 4.8))
+    for k, (lab, col) in SECT05.items():
+        s = c[c.sector == k]; ax.scatter(s.staleness_months, s.real_change, s=60, color=col, edgecolor=SURFACE, zorder=3, label=f"{lab} ({len(s)})")
+    ax.axhline(0, color=INK2, lw=0.8); ax.set(xlabel="Mesi dall'ultimo aumento a dicembre 2021", ylabel="Variazione reale 2021-2024 (%)", xlim=(-2, 66))
+    ax.legend(loc="upper center", bbox_to_anchor=(0.45, -0.17), ncol=2, fontsize=10.5, frameon=False); ax.set_title(f"{len(c)} raggruppamenti di contratti", fontsize=12.5); fig.tight_layout(); save(fig, "05_eta_settore")
+
+
+AGG05 = {"Z0060": ("Industria", ITALY_C), "Z1240": ("Servizi privati", EU_C), "Z2540": ("Pubblico", "#5d6470")}  # Istat aggregates for the sector lines (agriculture, a single leaf, is not in the industry aggregate)
+
+
+def _dec_prices(d: dict) -> pd.Series:
+    return pd.Series({pd.Timestamp(f"{y}-12-31"): 100 * np.prod([1 + d["dec"][k] / 100 for k in range(2022, y + 1)]) for y in range(2021, 2026)})
+
+
+def fig05_sectors(d: dict) -> None:
+    """Istat contractual-wage aggregates for industry, private services and the public sector, month by month (December 2021 = 100), against consumer prices at each December."""
+    w = d["wages"]; ix = w[w.group.isin(list(AGG05))].pivot(index="month", columns="group", values="index").loc["2021-06":"2025-12"]
+    ix = ix / ix.loc["2021-12-31"] * 100; price = _dec_prices(d)
+    spike = pd.Timestamp("2023-12-31"); print(f"05 sectors: public December 2023 {ix.loc[spike, 'Z2540']:.1f} (Istat: advance of the whole 2024 vacancy allowance to central-government staff, paid in December 2023), drawn at the November value {ix.loc['2023-11-30', 'Z2540']:.1f}")
+    ix.loc[spike, "Z2540"] = ix.loc["2023-11-30", "Z2540"]  # stated in the caption: the spike would flatten every other line on a phone
+    print("05 sectors, December values:\n", pd.concat([ix[ix.index.month == 12], price.rename("prices")], axis=1).round(1).to_string())
+    fig, ax = plt.subplots(figsize=(5.4, 4.6))
+    ax.plot(price.index, price, color=INK2, lw=1.6, ls="--", marker="o", ms=5, zorder=2)
+    for g, (lab, col) in AGG05.items():
+        ax.step(ix.index, ix[g], where="post", color=col, lw=2.4, zorder=3)
+        ax.annotate(lab, (ix.index[-1], ix[g].iloc[-1]), xytext=(4, 0), textcoords="offset points", va="center", fontsize=11, fontweight="bold", color=col, annotation_clip=False)
+    ax.annotate("Prezzi al\nconsumo", (price.index[1], price.iloc[1]), xytext=(-10, -4), textcoords="offset points", va="top", ha="right", fontsize=11, fontweight="bold", color=INK2)
+    ax.axhline(100, color=INK2, lw=0.8, ls=":"); ax.set(ylabel="Indice, dicembre 2021 = 100", ylim=(97, 119))
+    ax.set_xticks([pd.Timestamp(f"{y}-01-01") for y in range(2022, 2026)], [str(y) for y in range(2022, 2026)])
+    ax.set_title("Salario contrattuale orario per settore\nprezzi al consumo: valori di dicembre", fontsize=12.5); fig.tight_layout(); save(fig, "05_settori")
+
+
+def _rho(x: pd.Series, y: pd.Series) -> float:
+    return float(x.rank().corr(y.rank()))
+
+
+def fig05_within(d: dict) -> None:
+    """The 30 parent groups of figure 4 split by sector, one small panel each: inside a sector the slope between contract age and real loss flattens."""
+    c = d["clu"]
+    fig, axes = plt.subplots(1, 3, figsize=(5.4, 3.6), sharey=True)
+    for ax, (k, (lab, col)) in zip(axes, SECT05.items(), strict=True):
+        s = c[c.sector == k]; r = _rho(s.staleness_months, s.real_change); print(f"05 within {k}: n {len(s)}, spearman {r:.2f}")
+        ax.scatter(s.staleness_months, s.real_change, s=46, color=col, edgecolor=SURFACE, zorder=3); ax.axhline(0, color=INK2, lw=0.8)
+        ax.set_title(f"{lab.replace(' e ', ' e\n')}\n({len(s)})" if " e " in lab else f"{lab}\n({len(s)})", fontsize=10.5, color=col, fontweight="bold")
+        ax.set_xlim(-3, 66); ax.set_xticks([0, 30, 60]); ax.tick_params(labelsize=10)
+    axes[0].set_ylabel("Variazione reale 2021-2024 (%)"); axes[1].set_xlabel("Mesi dall'ultimo aumento a dicembre 2021")
+    fig.tight_layout(); save(fig, "05_dentro_settore")
+
+
+def fig05_sector_prices(d: dict) -> None:
+    """Figure 4 redrawn with sector consumer prices (goods for industry, services for private services, all items for the public sector): the gap between sectors narrows and the age-loss slope nearly vanishes."""
+    from cifresignificative.core.sources import istat_contracts as IC
+    from cifresignificative.studies.italy_productivity.analysis import contracts as CT
+    from cifresignificative.studies.italy_productivity.analysis.hf import load_highfreq
+    hf = load_highfreq(); decs = {k: CT.december_inflation(hf, indicator=v) for k, v in CT.DEFLATOR_INDICATORS.items()}
+    lv = d["lv"]; defl = CT.deflator_of(IC.load_groups())
+    sec = CT.cluster_table(lv.drop(columns=["sector", "name"]).assign(real_change=CT.sector_real_change(lv, defl, decs, 2021, 2024))).join(d["clu"].sector)
+    nat = d["clu"]
+    print(f"05 sector prices: spearman national {_rho(nat.staleness_months, nat.real_change):.2f}, sector {_rho(sec.staleness_months, sec.real_change):.2f}; mean real by sector national {nat.groupby('sector').real_change.mean().round(2).to_dict()}, sector prices {sec.groupby('sector').real_change.mean().round(2).to_dict()}")
+    fig, axes = plt.subplots(1, 2, figsize=(5.4, 4.4), sharey=True, layout="constrained")
+    for ax, t, ttl in zip(axes, (nat, sec), ("Con i prezzi di tutti\ni beni e servizi", "Con i prezzi\ndel settore"), strict=True):
+        for k, (lab, col) in SECT05.items():
+            s = t[t.sector == k]; ax.scatter(s.staleness_months, s.real_change, s=40, color=col, edgecolor=SURFACE, zorder=3, label=lab)
+        ax.axhline(0, color=INK2, lw=0.8); ax.set_title(ttl, fontsize=11.5); ax.set_xlim(-3, 66); ax.set_xticks([0, 20, 40, 60])
+    axes[0].set_ylabel("Variazione reale 2021-2024 (%)"); fig.supxlabel("Mesi dall'ultimo aumento a dicembre 2021", fontsize=11)
+    fig.legend(*axes[0].get_legend_handles_labels(), loc="outside upper center", ncol=3, fontsize=9.5, frameon=False, handletextpad=0.2, columnspacing=0.8)
+    save(fig, "05_prezzi_settore")
+
+
+def cover05(d: dict) -> None:
+    """Share/preview image 1200x630: contractual wages of the whole economy against consumer prices, December 2021 to December 2024."""
+    nom = float(d["agg"].loc[(2024, "Z3620"), "nominal_change"]); p = d["infl"][2024]; print(f"05 cover: contractual wages {nom:+.1f}%, prices {p:+.1f}% (Dec 2021 - Dec 2024)")
+    _cover("05", "Salari contrattuali dietro i prezzi", "Dicembre 2021 - dicembre 2024", [("Salari contrattuali", nom, ITALY_C), ("Prezzi al consumo", p, EU_C)], lambda v: f"{v:+.1f}%".replace("-", "−"), p)
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("posts", nargs="*", choices=["00", "01", "02", "03", "04"])
+    parser.add_argument("posts", nargs="*", choices=["00", "01", "02", "03", "04", "05"])
     parser.add_argument("--lang", choices=["it", "en"], default="it")
     parser.add_argument("--out", type=Path, help="Override the figure output directory")
     args = parser.parse_args()
-    if args.lang == "en" and (not args.posts or "03" in args.posts or "04" in args.posts):
+    if args.lang == "en" and (not args.posts or "03" in args.posts or "04" in args.posts or "05" in args.posts):
         parser.error("English figures currently support the published posts: specify 00, 01 and/or 02")
     LANG = args.lang
     OUT = args.out or (OUT.parent / "en/figures" if LANG == "en" else OUT)
@@ -668,3 +821,6 @@ if __name__ == "__main__":
     if not only or "04" in only:
         panel, lh = load_panel(), load_long()
         fig04_wages(panel, lh); fig04_productivity(lh); cover04(panel, lh)
+    if not only or "05" in only:
+        d05 = data05()
+        fig05_sectors(d05); fig05_groups(d05); fig05_steps(d05); fig05_waiting(d05); fig05_age(d05); fig05_within(d05); fig05_sector_prices(d05); cover05(d05)

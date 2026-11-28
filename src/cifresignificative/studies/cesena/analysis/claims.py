@@ -21,7 +21,12 @@ from cifresignificative.studies.cesena.analysis.hours import (
     comparable_provinces,
     mix_decomposition,
     province_panel,
+    real_pay_changes,
+    totals_growth,
+    totals_panel,
     unit_vs_others,
+    working_time_change,
+    working_time_panel,
 )
 from cifresignificative.studies.cesena.analysis.income_followup import component_changes
 from cifresignificative.studies.cesena.analysis.investments import (
@@ -30,6 +35,7 @@ from cifresignificative.studies.cesena.analysis.investments import (
 
 PROCESSED_DIR = Path("data/processed/cesena")
 REVIEW_GROWTH = Path("studies/cesena/reports/income_evidence/review_growth.csv")
+DEFLATOR_AUDIT = Path("studies/cesena/reports/income_evidence/deflator_audit.csv")  # `panel_chained_2020_1`: the price index of post 01
 CORE = [c for c in CORE_PEER_IDS if c != CESENA]
 
 
@@ -746,7 +752,7 @@ def _hours(c: _Claims, p: Path) -> None:
         return
     panel = province_panel(inps_osservatorio.load())
     src = "data/raw/inps_osservatorio (INPS Osservatorio lavoratori dipendenti)"
-    for y1 in (2024, 2018):
+    for y1 in (2024, 2018, 2025):
         keep = comparable_provinces(panel, (2008, y1))
         dec = mix_decomposition(panel, 2008, y1, keep)
         r = unit_vs_others(dec)
@@ -757,6 +763,19 @@ def _hours(c: _Claims, p: Path) -> None:
             c.add(f"hours_{cid}_08{t}_others", r.loc[col, "median_others"], f(float(r.loc[col, "median_others"])), "06", w, src)
         c.add(f"hours_mix_08{t}_er", er.loc["mix_pct", "median_others"], pct(float(er.loc["mix_pct", "median_others"])), "06", w, src, int(er.loc["mix_pct", "rank"]), int(er.loc["mix_pct", "n_others"]) + 1)
         c.add(f"hours_share_08{t}_er", er.loc["share_pt_change_pp", "median_others"], pp(float(er.loc["share_pt_change_pp", "median_others"])), "06", w, src)
+    prices = pd.read_csv(DEFLATOR_AUDIT).set_index("year").panel_chained_2020_1
+    src_r = src + "; deflated with the national price index of post 01 (reports/income_evidence/deflator_audit.csv)"
+    for y0, y1 in ((2008, 2024), (2008, 2018), (2018, 2024)):
+        rr = real_pay_changes(panel, y0, y1, prices, comparable_provinces(panel, (y0, y1)))
+        r, er = unit_vs_others(rr), unit_vs_others(rr, others=[x for x in ER_PROVINCES if x in rr.index])
+        w, t = f"{y0}-{y1}", f"{str(y0)[2:]}{str(y1)[2:]}"
+        for col, cid in [("pay_per_worker_real_pct", "payworker"), ("within_real_pct", "within"), ("pay_per_worker_no_real_pct", "no"), ("pay_per_worker_si_real_pct", "si"), ("days_per_worker_no_change_pct", "days_no")]:
+            k = f"hours_{cid}_{t}" if cid == "days_no" else f"hours_real_{cid}_{t}"  # paid days are not deflated
+            c.add(k, r.loc[col, "unit"], pct(float(r.loc[col, "unit"])), "06", w, src_r, int(r.loc[col, "rank"]), int(r.loc[col, "n_others"]) + 1)
+            c.add(f"{k}_others", r.loc[col, "median_others"], pct(float(r.loc[col, "median_others"])), "06", w, src_r)
+            c.add(f"{k}_er", er.loc[col, "median_others"], pct(float(er.loc[col, "median_others"])), "06", w, src_r, int(er.loc[col, "rank"]), int(er.loc[col, "n_others"]) + 1)
+    for y in (2008, 2024):
+        c.add(f"hours_dpw_no_{y}", panel.loc[(y, UNIT), "days_per_worker_no"], num(panel.loc[(y, UNIT), "days_per_worker_no"]), "06", str(y), src)
     a, b = panel.loc[(2008, UNIT)], panel.loc[(2024, UNIT)]
     c.add("hours_share_0", a.share_pt_pct, share(a.share_pt_pct), "06", "2008", src)
     c.add("hours_share_1", b.share_pt_pct, share(b.share_pt_pct), "06", "2024", src)
@@ -765,6 +784,27 @@ def _hours(c: _Claims, p: Path) -> None:
     c.add("hours_ptratio_1", b.pt_pay_per_day_ratio, share(b.pt_pay_per_day_ratio * 100, 0), "06", "2024", src)
     c.add("hours_workers_0", a.workers, num(a.workers, 0), "06", "2008", src)
     c.add("hours_workers_1", b.workers, num(b.workers, 0), "06", "2024", src)
+    e = panel.loc[(2025, UNIT)]
+    c.add("hours_share_2", e.share_pt_pct, share(e.share_pt_pct), "06", "2025", src)
+    c.add("hours_workers_2", e.workers, num(e.workers, 0), "06", "2025", src)
+    tot = totals_panel(inps_osservatorio.load_totals())
+    src_t = src + " (totals; 2021 as revised on 2026-11-24)"
+    for y0, y1 in ((2019, 2020), (2019, 2021), (2018, 2021), (2021, 2022), (2022, 2023), (2023, 2024), (2024, 2025), (2021, 2025), (2019, 2025)):
+        g = totals_growth(tot, y0, y1, comparable_provinces(tot, (y0, y1)))
+        r = unit_vs_others(g)
+        w, t = f"{y0}-{y1}", f"{str(y0)[2:]}{str(y1)[2:]}"
+        for col, cid in [("workers_change_pct", "workers"), ("days_per_worker_change_pct", "days"), ("pay_per_day_change_pct", "payday"), ("pay_per_worker_change_pct", "payworker")]:
+            c.add(f"hours_tot_{cid}_{t}", r.loc[col, "unit"], pct(float(r.loc[col, "unit"])), "06", w, src_t, int(r.loc[col, "rank"]), int(r.loc[col, "n_others"]) + 1)
+            c.add(f"hours_tot_{cid}_{t}_others", r.loc[col, "median_others"], pct(float(r.loc[col, "median_others"])), "06", w, src_t)
+    wt = working_time_panel(inps_osservatorio.load_working_time())
+    src_w = "data/raw/inps_osservatorio (INPS Osservatorio mensile, tipologia di orario, media dei dodici mesi)"
+    for y0, y1 in ((2008, 2025), (2008, 2019), (2019, 2025), (2021, 2025)):
+        r = unit_vs_others(working_time_change(wt, y0, y1, comparable_provinces(wt, (y0, y1))))
+        w, t = f"{y0}-{y1}", f"{str(y0)[2:]}{str(y1)[2:]}"
+        c.add(f"hours_wt_share_{t}", r.loc["share_change_pp", "unit"], pp(float(r.loc["share_change_pp", "unit"])), "06", w, src_w, int(r.loc["share_change_pp", "rank"]), int(r.loc["share_change_pp", "n_others"]) + 1)
+        c.add(f"hours_wt_share_{t}_others", r.loc["share_change_pp", "median_others"], pp(float(r.loc["share_change_pp", "median_others"])), "06", w, src_w)
+    for y in (2008, 2019, 2025):
+        c.add(f"hours_wt_level_{y}", wt.loc[(y, UNIT), "part_time_share_pct"], share(wt.loc[(y, UNIT), "part_time_share_pct"]), "06", str(y), src_w)
 
 
 def income_followup_claims(components: pd.DataFrame, deflator: pd.Series) -> pd.DataFrame:
